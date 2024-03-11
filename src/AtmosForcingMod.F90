@@ -50,6 +50,8 @@ contains
               RadSwDownRefHeight      => noahmp%forcing%RadSwDownRefHeight           ,& ! in,  downward shortwave radiation [W/m2] at reference height
               WindEastwardRefHeight   => noahmp%forcing%WindEastwardRefHeight        ,& ! in,  wind speed [m/s] in eastward direction at reference height
               WindNorthwardRefHeight  => noahmp%forcing%WindNorthwardRefHeight       ,& ! in,  wind speed [m/s] in northward direction at reference height
+              VisFrac                 => noahmp%forcing%VisFrac                      ,& ! in,
+              DirFrac                 => noahmp%forcing%DirFrac                      ,& ! in,
               SnowfallDensityMax      => noahmp%water%param%SnowfallDensityMax       ,& ! in,  maximum fresh snowfall density [kg/m3]
               TemperaturePotRefHeight => noahmp%energy%state%TemperaturePotRefHeight ,& ! out, surface potential temperature [K]
               PressureVaporRefHeight  => noahmp%energy%state%PressureVaporRefHeight  ,& ! out, vapor pressure air [Pa] at reference height
@@ -78,6 +80,19 @@ contains
     ! downward solar radiation
     RadDirFrac = 0.7
     RadVisFrac = 0.5
+
+    if (DirFrac >=0.0 .and. DirFrac <=1.0) then
+       RadDirFrac=DirFrac
+    else
+       DirFrac=RadDirFrac
+    endif
+
+    if (VisFrac >=0.0 .and. VisFrac <=1.0) then 
+       RadVisFrac=VisFrac
+    else
+       VisFrac=RadVisFrac
+    endif
+
     if ( CosSolarZenithAngle <= 0.0 ) RadSwDownRefHeight = 0.0                  ! filter by solar zenith angle
     RadSwDownDir(1) = RadSwDownRefHeight * RadDirFrac       * RadVisFrac        ! direct  vis
     RadSwDownDir(2) = RadSwDownRefHeight * RadDirFrac       * (1.0-RadVisFrac)  ! direct  nir
@@ -151,26 +166,21 @@ contains
        endif
     endif
 
-    ! wet-bulb scheme (Wang et al., 2019 GRL), C.He, 12/18/2020, R. Abolafia-Rosnezweig, 02/01/2024
+    ! wet-bulb scheme (Wang et al., 2019 GRL), C.He, 12/18/2020
     if ( OptRainSnowPartition == 5 ) then
-
-        if ( TemperatureAirRefHeight >= (ConstFreezePoint+10) ) then !avoid numerical errors when temperature is high
-            FrozenPrecipFrac = 0.0
-        else
-            TemperatureDegC = min( 50.0, max(-50.0,(TemperatureAirRefHeight-ConstFreezePoint)) )    ! Kelvin to degree Celsius with limit -50 to +50
-            if ( TemperatureAirRefHeight > ConstFreezePoint ) then
-                LatHeatVap = ConstLatHeatEvap
-            else
-                LatHeatVap = ConstLatHeatSublim
-            endif
-            PsychConst            = ConstHeatCapacAir * PressureAirRefHeight / (0.622 * LatHeatVap)
-            TemperatureWetBulb    = TemperatureDegC - 5.0    ! first guess wetbulb temperature
-            do LoopInd = 1, LoopNum
-                VapPresSat         = 610.8 * exp( (17.27*TemperatureWetBulb) / (237.3+TemperatureWetBulb) )
-                TemperatureWetBulb = TemperatureWetBulb - (VapPresSat - PressureVaporRefHeight) / PsychConst   ! Wang et al., 2019 GRL Eq.2
-            enddo
-            FrozenPrecipFrac      = 1.0 / (1.0 + 6.99e-5 * exp(2.0*(TemperatureWetBulb+3.97)))                ! Wang et al., 2019 GRL Eq. 1
-        endif
+       TemperatureDegC = min( 50.0, max(-50.0,(TemperatureAirRefHeight-ConstFreezePoint)) )    ! Kelvin to degree Celsius with limit -50 to +50
+       if ( TemperatureAirRefHeight > ConstFreezePoint ) then
+          LatHeatVap = ConstLatHeatEvap
+       else
+          LatHeatVap = ConstLatHeatSublim
+       endif
+       PsychConst            = ConstHeatCapacAir * PressureAirRefHeight / (0.622 * LatHeatVap)
+       TemperatureWetBulb    = TemperatureDegC - 5.0    ! first guess wetbulb temperature
+       do LoopInd = 1, LoopNum
+          VapPresSat         = 610.8 * exp( (17.27*TemperatureWetBulb) / (237.3+TemperatureWetBulb) )
+          TemperatureWetBulb = TemperatureWetBulb - (VapPresSat - PressureVaporRefHeight) / PsychConst   ! Wang et al., 2019 GRL Eq.2
+       enddo
+       FrozenPrecipFrac      = 1.0 / (1.0 + 6.99e-5 * exp(2.0*(TemperatureWetBulb+3.97)))                ! Wang et al., 2019 GRL Eq. 1
     endif
 
     ! rain-snow partitioning

@@ -31,9 +31,9 @@ contains
               LeafAreaIndEff    => noahmp%energy%state%LeafAreaIndEff    ,& ! in,    leaf area index, after burying by snow
               StemAreaIndEff    => noahmp%energy%state%StemAreaIndEff    ,& ! in,    stem area index, after burying by snow
               FlagFrozenCanopy  => noahmp%energy%state%FlagFrozenCanopy  ,& ! in,    used to define latent heat pathway
-              VegFrac           => noahmp%energy%state%VegFrac           ,& ! in,    greeness vegetation fraction
               SnowfallDensity   => noahmp%water%state%SnowfallDensity    ,& ! in,    bulk density of snowfall [kg/m3]
               CanopyLiqHoldCap  => noahmp%water%param%CanopyLiqHoldCap   ,& ! in,    maximum intercepted liquid water per unit veg area index [mm]
+              VegFrac           => noahmp%energy%state%VegFrac           ,& ! in,    greeness vegetation fraction
               CanopyLiqWater    => noahmp%water%state%CanopyLiqWater     ,& ! inout, intercepted canopy liquid water [mm]
               CanopyIce         => noahmp%water%state%CanopyIce          ,& ! inout, intercepted canopy ice [mm]
               TemperatureCanopy => noahmp%energy%state%TemperatureCanopy ,& ! inout, vegetation temperature [K]
@@ -68,7 +68,7 @@ contains
 
     ! canopy liquid water
     ! maximum canopy intercepted water
-    CanopyLiqWaterMax =  VegFrac * CanopyLiqHoldCap * (LeafAreaIndEff + StemAreaIndEff)
+    CanopyLiqWaterMax = VegFrac * CanopyLiqHoldCap * (LeafAreaIndEff + StemAreaIndEff)
 
     ! canopy evaporation, transpiration, and dew
     if ( FlagFrozenCanopy .eqv. .false. ) then    ! Barlage: change to FlagFrozenCanopy
