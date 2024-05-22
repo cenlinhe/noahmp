@@ -38,12 +38,15 @@ contains
 ! --------------------------------------------------------------------
     associate(                                                                       &
               MainTimeStep            => noahmp%config%domain%MainTimeStep          ,& ! in,    noahmp main time step [s]
+              UserDefineMode          => noahmp%config%domain%UserDefineMode        ,& ! in,    user defined mode switch, cenlin: cropsmart
               TemperatureAirRefHeight => noahmp%forcing%TemperatureAirRefHeight     ,& ! in,    air temperature [K] at reference height
               WindEastwardRefHeight   => noahmp%forcing%WindEastwardRefHeight       ,& ! in,    wind speed [m/s] in eastward direction at reference height
               WindNorthwardRefHeight  => noahmp%forcing%WindNorthwardRefHeight      ,& ! in,    wind speed [m/s] in northward direction at reference height
               PressureVaporRefHeight  => noahmp%energy%state%PressureVaporRefHeight ,& ! in,    vapor pressure air [Pa]
               IrriSprinklerRate       => noahmp%water%param%IrriSprinklerRate       ,& ! in,    sprinkler irrigation rate [mm/h]
+              IrrigationOn            => noahmp%water%state%IrrigationOn            ,& ! in,    user defined irrigation switch, cenlin: cropsmart
               IrrigationFracSprinkler => noahmp%water%state%IrrigationFracSprinkler ,& ! in,    sprinkler irrigation fraction (0 to 1)
+              IrrigationSprinklerType => noahmp%water%state%IrrigationSprinklerType ,& ! in,    1=above crop canopy sprinkler; 2=below canopy sprinkler; cenlin: cropsmart
               SoilMoisture            => noahmp%water%state%SoilMoisture            ,& ! in,    total soil moisture [m3/m3]
               SoilLiqWater            => noahmp%water%state%SoilLiqWater            ,& ! in,    soil water content [m3/m3]
               HeatLatentIrriEvap      => noahmp%energy%flux%HeatLatentIrriEvap      ,& ! inout, latent heating due to sprinkler evaporation [W/m2]
@@ -52,12 +55,16 @@ contains
               RainfallRefHeight       => noahmp%water%flux%RainfallRefHeight        ,& ! inout, rainfall [mm/s] at reference height
               IrrigationRateSprinkler => noahmp%water%flux%IrrigationRateSprinkler  ,& ! inout, rate of irrigation by sprinkler [m/timestep]
               IrriEvapLossSprinkler   => noahmp%water%flux%IrriEvapLossSprinkler    ,& ! inout, loss of irrigation water to evaporation,sprinkler [m/timestep]
+              IrrigationSprinklerWatAct => noahmp%water%flux%IrrigationSprinklerWatAct,& ! out, actual irrigation water after evaporation loss [mm/s], cenlin:cropsmart
               SoilIce                 => noahmp%water%state%SoilIce                  & ! out,   soil ice content [m3/m3]
              )
 ! ----------------------------------------------------------------------
 
     ! initialize
     SoilIce(:) = max(0.0, SoilMoisture(:)-SoilLiqWater(:))
+
+    ! cenlin: add for cropsmart
+    if ((UserDefineMode == 0) .or. (IrrigationRateSprinkler <= 0.0)) then
 
     ! estimate infiltration rate based on Philips Eq.
     call IrrigationInfilPhilip(noahmp, MainTimeStep, InfilRateSfc)
@@ -66,6 +73,8 @@ contains
     IrriRateTmp             = IrriSprinklerRate * (1.0/1000.0) * MainTimeStep / 3600.0              ! NRCS rate/time step - calibratable
     IrrigationRateSprinkler = min(InfilRateSfc*MainTimeStep, IrrigationAmtSprinkler, IrriRateTmp)   ! Limit irrigation rate to minimum of infiltration rate
                                                                                                     ! and to the NRCS recommended rate
+    endif ! UserDefineMode
+
     ! evaporative loss from droplets: Based on Bavi et al., (2009). Evaporation 
     ! losses from sprinkler irrigation systems under various operating 
     ! conditions. Journal of Applied Sciences, 9(3), 597-600.
@@ -93,10 +102,21 @@ contains
     endif
 
     IrriEvapLossSprinkler      = IrrigationRateSprinkler * IrriLossTmp * (1.0/100.0)
-    IrrigationRateSprinkler    = IrrigationRateSprinkler - IrriEvapLossSprinkler
 
-    ! include sprinkler water to total rain for canopy process later
-    RainfallRefHeight  = RainfallRefHeight + (IrrigationRateSprinkler * 1000.0 / MainTimeStep)
+    ! cenlin: add for cropsmart
+    if (UserDefineMode == 1) then
+       IrrigationSprinklerWatAct = max(0.0,(IrrigationRateSprinkler - IrriEvapLossSprinkler)) * 1000.0 / MainTimeStep
+       if (IrrigationSprinklerType == 1) & ! above canopy sprinkler
+          RainfallRefHeight  = RainfallRefHeight + IrrigationSprinklerWatAct
+
+    else ! original irrigation treatment
+
+       IrrigationRateSprinkler    = IrrigationRateSprinkler - IrriEvapLossSprinkler
+
+       ! include sprinkler water to total rain for canopy process later
+       RainfallRefHeight  = RainfallRefHeight + (IrrigationRateSprinkler * 1000.0 / MainTimeStep)
+
+    endif ! UserDefineMode
 
     ! cooling and humidification due to sprinkler evaporation, per m^2 calculation 
     HeatLatentIrriEvap = IrriEvapLossSprinkler * 1000.0 * ConstLatHeatEvap / MainTimeStep   ! heat used for evaporation [W/m2]

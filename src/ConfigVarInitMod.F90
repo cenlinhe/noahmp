@@ -74,6 +74,7 @@ contains
     noahmp%config%domain%IndexEBLForest              = undefined_int
     noahmp%config%domain%NumDayInYear                = undefined_int
     noahmp%config%domain%RunoffSlopeType             = undefined_int
+    noahmp%config%domain%UserDefineMode              = undefined_int ! cenlin: cropsmart
     noahmp%config%domain%MainTimeStep                = undefined_real
     noahmp%config%domain%SoilTimeStep                = undefined_real
     noahmp%config%domain%GridSize                    = undefined_real

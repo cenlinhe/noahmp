@@ -153,6 +153,7 @@ module ConfigVarType
     integer                :: NumDayInYear                ! Number of days in the particular year
     integer                :: RunoffSlopeType             ! underground runoff slope term type
     integer                :: NumSoilTimeStep             ! number of timesteps to calculate soil processes
+    integer                :: UserDefineMode              ! cropsmart: 0=user define mode off; 1=user define mode on; cenlin
     real(kind=kind_noahmp) :: MainTimeStep                ! noahmp main timestep [sec]
     real(kind=kind_noahmp) :: SoilTimeStep                ! soil timestep [sec]
     real(kind=kind_noahmp) :: GridSize                    ! noahmp model grid spacing [m]

@@ -31,6 +31,8 @@ contains
     noahmp%water%state%IrrigationCntSprinkler      = undefined_int
     noahmp%water%state%IrrigationCntMicro          = undefined_int
     noahmp%water%state%IrrigationCntFlood          = undefined_int
+    noahmp%water%state%IrrigationSprinklerType     = undefined_int
+    noahmp%water%state%IrrigationOn                = undefined_int
     noahmp%water%state%IrrigationFracFlood         = undefined_real
     noahmp%water%state%IrrigationAmtFlood          = undefined_real
     noahmp%water%state%IrrigationFracMicro         = undefined_real
@@ -194,6 +196,7 @@ contains
     noahmp%water%flux%IrriEvapLossSprinkler        = 0.0
     noahmp%water%flux%EvapIrriSprinkler            = 0.0
     noahmp%water%flux%TileDrain                    = 0.0
+    noahmp%water%flux%IrrigationSprinklerWatAct    = undefined_real
 
     if ( .not. allocated(noahmp%water%flux%CompactionSnowAging) )   &
        allocate( noahmp%water%flux%CompactionSnowAging(-NumSnowLayerMax+1:0) )

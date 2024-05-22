@@ -122,18 +122,22 @@ contains
        noahmp%biochem%param%TurnoverCoeffRootCrop   = NoahmpIO%RT_OVRC_TABLE  (CropType,:)
 
        if ( OptCropModel == 1 ) then
-          noahmp%biochem%param%DatePlanting         = NoahmpIO%PLANTING(I,J)
-          noahmp%biochem%param%DateHarvest          = NoahmpIO%HARVEST(I,J)
-          noahmp%biochem%param%GrowDegDayEmerg      = NoahmpIO%SEASON_GDD(I,J) / 1770.0 * &
-                                                      noahmp%biochem%param%GrowDegDayEmerg
-          noahmp%biochem%param%GrowDegDayInitVeg    = NoahmpIO%SEASON_GDD(I,J) / 1770.0 * &
-                                                      noahmp%biochem%param%GrowDegDayInitVeg
-          noahmp%biochem%param%GrowDegDayPostVeg    = NoahmpIO%SEASON_GDD(I,J) / 1770.0 * &
-                                                      noahmp%biochem%param%GrowDegDayPostVeg
-          noahmp%biochem%param%GrowDegDayInitReprod = NoahmpIO%SEASON_GDD(I,J) / 1770.0 * &
-                                                      noahmp%biochem%param%GrowDegDayInitReprod
-          noahmp%biochem%param%GrowDegDayMature     = NoahmpIO%SEASON_GDD(I,J) / 1770.0 * &
-                                                      noahmp%biochem%param%GrowDegDayMature
+          if (NoahmpIO%PLANTING(I,J) > 0) & ! cenlin
+             noahmp%biochem%param%DatePlanting         = NoahmpIO%PLANTING(I,J)
+          if (NoahmpIO%HARVEST(I,J) > 0) &  ! cenlin
+             noahmp%biochem%param%DateHarvest          = NoahmpIO%HARVEST(I,J)
+          if (NoahmpIO%SEASON_GDD(I,J) > 0) then ! cenlin
+             noahmp%biochem%param%GrowDegDayEmerg      = NoahmpIO%SEASON_GDD(I,J) / 1770.0 * &
+                                                         noahmp%biochem%param%GrowDegDayEmerg
+             noahmp%biochem%param%GrowDegDayInitVeg    = NoahmpIO%SEASON_GDD(I,J) / 1770.0 * &
+                                                         noahmp%biochem%param%GrowDegDayInitVeg
+             noahmp%biochem%param%GrowDegDayPostVeg    = NoahmpIO%SEASON_GDD(I,J) / 1770.0 * &
+                                                         noahmp%biochem%param%GrowDegDayPostVeg
+             noahmp%biochem%param%GrowDegDayInitReprod = NoahmpIO%SEASON_GDD(I,J) / 1770.0 * &
+                                                         noahmp%biochem%param%GrowDegDayInitReprod
+             noahmp%biochem%param%GrowDegDayMature     = NoahmpIO%SEASON_GDD(I,J) / 1770.0 * &
+                                                         noahmp%biochem%param%GrowDegDayMature
+          endif
         endif
     endif ! activate crop parameters
 
@@ -141,7 +145,13 @@ contains
        noahmp%biochem%param%DatePlanting = NoahmpIO%PLANTING(I,J)
        noahmp%biochem%param%DateHarvest  = NoahmpIO%HARVEST (I,J)
     endif
-    
+
+    ! cenlin: add for cropsmart
+    if (NoahmpIO%USER_DEFINE_MODE == 1) then
+       if (NoahmpIO%PLANT_DATE > 0) &
+          noahmp%biochem%param%DatePlanting = NoahmpIO%PLANT_DATE
+    endif
+
     end associate
 
   end subroutine BiochemVarInTransfer

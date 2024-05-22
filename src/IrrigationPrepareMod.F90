@@ -30,10 +30,12 @@ contains
               LandUseDataName         => noahmp%config%domain%LandUseDataName       ,& ! in,    landuse data name (USGS or MODIS_IGBP)
               VegType                 => noahmp%config%domain%VegType               ,& ! in,    vegetation type
               FlagSoilProcess         => noahmp%config%domain%FlagSoilProcess       ,& ! in,    flag to calculate soil processes
+              UserDefineMode          => noahmp%config%domain%UserDefineMode        ,& ! in,    user defined mode switch, cenlin: cropsmart
               OptIrrigationMethod     => noahmp%config%nmlist%OptIrrigationMethod   ,& ! in,    irrigation method option
               IrriFracThreshold       => noahmp%water%param%IrriFracThreshold       ,& ! in,    irrigation fraction threshold
               IrriStopPrecipThr       => noahmp%water%param%IrriStopPrecipThr       ,& ! in,    maximum precipitation to stop irrigation trigger
               IrrigationFracGrid      => noahmp%water%state%IrrigationFracGrid      ,& ! in,    total input irrigation fraction of a grid
+              IrrigationOn            => noahmp%water%state%IrrigationOn            ,& ! in,    user defined irrigation switch, cenlin: cropsmart
               IrrigationAmtSprinkler  => noahmp%water%state%IrrigationAmtSprinkler  ,& ! inout, irrigation water amount [m] to be applied, Sprinkler
               IrrigationAmtFlood      => noahmp%water%state%IrrigationAmtFlood      ,& ! inout, flood irrigation water amount [m]
               IrrigationAmtMicro      => noahmp%water%state%IrrigationAmtMicro      ,& ! inout, micro irrigation water amount [m]
@@ -54,6 +56,19 @@ contains
     elseif ( trim(LandUseDataName) == "MODIFIED_IGBP_MODIS_NOAH") then
        if ( (VegType == 12) .or. (VegType == 14) ) FlagCropland = .true.
     endif
+
+    ! cenlin: add for cropsmart
+    if (UserDefineMode == 1) then
+       IrrigationFracSprinkler = 1.0
+       IrrigationFracMicro     = 0.0
+       IrrigationFracFlood     = 0.0
+       if (IrrigationAmtSprinkler < 1.0e-9) IrrigationOn = 0
+       if (IrrigationOn == 0) then
+          IrrigationFracSprinkler = 0.0
+          IrrigationAmtSprinkler = 0.0
+       endif
+
+    else ! original NoahMP irrigation scheme
 
     ! if OptIrrigationMethod = 0 and if methods are unknown for certain area, then use sprinkler irrigation method
     if ( (OptIrrigationMethod == 0) .and. (IrrigationFracSprinkler == 0.0) .and. (IrrigationFracMicro == 0.0) &
@@ -91,6 +106,8 @@ contains
           IrrigationAmtFlood     = 0.0
        endif
     endif
+
+    endif ! UserDefineMode
 
     end associate
 

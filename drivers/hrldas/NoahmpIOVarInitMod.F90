@@ -700,6 +700,7 @@ contains
     NoahmpIO%IRFIVOL         = 0.0
     NoahmpIO%IRRSPLH         = 0.0
     NoahmpIO%LOCTIM          = undefined_real
+    NoahmpIO%IRRIGATION_RATE = 0.0 ! cenlin: cropsmart
 
     ! spatial varying soil texture
     if ( NoahmpIO%IOPT_SOIL > 1 ) then

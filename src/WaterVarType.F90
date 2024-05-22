@@ -41,6 +41,7 @@ module WaterVarType
     real(kind=kind_noahmp) :: IrrigationRateMicro        ! micro irrigation water rate [m/timestep]
     real(kind=kind_noahmp) :: IrrigationRateSprinkler    ! sprinkler irrigation water rate [m/timestep]
     real(kind=kind_noahmp) :: IrriEvapLossSprinkler      ! loss of irrigation water to evaporation,sprinkler [m/timestep]
+    real(kind=kind_noahmp) :: IrrigationSprinklerWatAct  ! actual sprinkler irrigation water goes to crop after evaporation loss [mm/s], cenlin:cropsmart
     real(kind=kind_noahmp) :: SoilSfcInflow              ! water input on soil surface [m/s]
     real(kind=kind_noahmp) :: RunoffSurface              ! surface runoff [mm/s]
     real(kind=kind_noahmp) :: RunoffSubsurface           ! subsurface runoff [mm/s]
@@ -90,6 +91,8 @@ module WaterVarType
     integer                :: IrrigationCntSprinkler     ! irrigation event number, Sprinkler
     integer                :: IrrigationCntMicro         ! irrigation event number, Micro
     integer                :: IrrigationCntFlood         ! irrigation event number, Flood
+    integer                :: IrrigationSprinklerType    ! 1=above crop canopy sprinkler; 2=below canopy sprinkler; cenlin: cropsmart
+    integer                :: IrrigationOn               ! 0=irrigation off; 1=irrigation on (user control); cenlin: cropsmart
     real(kind=kind_noahmp) :: CanopyTotalWater           ! total (liquid+ice) canopy intercepted water [mm]
     real(kind=kind_noahmp) :: CanopyWetFrac              ! wetted or snowed fraction of the canopy
     real(kind=kind_noahmp) :: SnowfallDensity            ! bulk density of snowfall (kg/m3)

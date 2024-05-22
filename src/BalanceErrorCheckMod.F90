@@ -79,8 +79,10 @@ contains
               MainTimeStep            => noahmp%config%domain%MainTimeStep           ,& ! in,    main noahmp timestep [s]
               FlagCropland            => noahmp%config%domain%FlagCropland           ,& ! in,    flag to identify croplands
               FlagSoilProcess         => noahmp%config%domain%FlagSoilProcess        ,& ! in,    flag to calculate soil process
+              UserDefineMode          => noahmp%config%domain%UserDefineMode         ,& ! in,    user defined mode switch, cenlin: cropsmart
               IrriFracThreshold       => noahmp%water%param%IrriFracThreshold        ,& ! in,    irrigation fraction parameter
               IrrigationFracGrid      => noahmp%water%state%IrrigationFracGrid       ,& ! in,    total input irrigation fraction
+              IrrigationOn            => noahmp%water%state%IrrigationOn             ,& ! in,    user defined irrigation switch, cenlin: cropsmart
               WaterTableDepth         => noahmp%water%state%WaterTableDepth          ,& ! in,    water table depth [m]
               CanopyLiqWater          => noahmp%water%state%CanopyLiqWater           ,& ! in,    canopy intercepted liquid water [mm]
               CanopyIce               => noahmp%water%state%CanopyIce                ,& ! in,    canopy intercepted ice [mm]
@@ -88,6 +90,7 @@ contains
               SoilMoisture            => noahmp%water%state%SoilMoisture             ,& ! in,    total soil moisture [m3/m3]
               WaterStorageAquifer     => noahmp%water%state%WaterStorageAquifer      ,& ! in,    water storage in aquifer [mm]
               WaterStorageTotBeg      => noahmp%water%state%WaterStorageTotBeg       ,& ! in,    total water storage [mm] at the beginning
+              IrrigationSprinklerWatAct => noahmp%water%flux%IrrigationSprinklerWatAct,& !in,    actual irrigation water after evaporation loss [mm/s], cenlin:cropsmart
               PrecipTotRefHeight      => noahmp%water%flux%PrecipTotRefHeight        ,& ! in,    total precipitation [mm/s] at reference height
               EvapCanopyNet           => noahmp%water%flux%EvapCanopyNet             ,& ! in,    evaporation of intercepted water [mm/s]
               Transpiration           => noahmp%water%flux%Transpiration             ,& ! in,    transpiration rate [mm/s]
@@ -109,9 +112,14 @@ contains
 ! ----------------------------------------------------------------------
 
     ! before water balance check, add irrigation water to precipitation
+    ! cenlin: cropsmart
+    if (UserDefineMode == 1) then
+       if (IrrigationOn == 1) PrecipTotRefHeight = PrecipTotRefHeight + IrrigationSprinklerWatAct   
+    else
     if ( (FlagCropland .eqv. .true.) .and. (IrrigationFracGrid >= IrriFracThreshold) ) then
        PrecipTotRefHeight = PrecipTotRefHeight + IrrigationRateSprinkler * 1000.0 / MainTimeStep  ! irrigation
     endif
+    endif ! UserDefineMode
 
     ! only water balance check for every soil timestep
     ! Error in water balance should be < 0.1 mm

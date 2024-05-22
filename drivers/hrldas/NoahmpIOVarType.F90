@@ -659,6 +659,19 @@ module NoahmpIOVarType
     integer                                                ::  MAX_SOIL_LEVELS
     real(kind=kind_noahmp),  allocatable, dimension(:)     ::  soil_thick_input
 
+    ! new HRLDAS/NoahMP options added for user defined irrigation; cenlin, 05/20/2024
+    integer                                                :: USER_DEFINE_MODE
+    integer                                                :: SOIL_TYPE
+    integer                                                :: CROP_TYPE
+    integer                                                :: PLANT_DATE
+    integer                                                :: IRRIGATION_ON
+    real(kind=kind_noahmp)                                 :: IRRIGATION_FRAC
+    integer                                                :: IRRIGATION_TYPE
+    real(kind=kind_noahmp)                                 :: IRRIGATION_AMT
+    real(kind=kind_noahmp)                                 :: IRRIGATION_DUR
+    real(kind=kind_noahmp)                                 :: IRRIGATION_RATE
+    ! new options end
+
 !----------------------------------------------------------------
 ! Noahmp Parameters Table 
 !----------------------------------------------------------------

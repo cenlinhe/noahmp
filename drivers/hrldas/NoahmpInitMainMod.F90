@@ -228,6 +228,20 @@ contains
                    endif
                 endif
 
+                ! cenlin: cropsmart, user defined in namelist
+                if ((NoahmpIO%USER_DEFINE_MODE == 1) .and. (NoahmpIO%CROP_TYPE > 0)) then
+                   NoahmpIO%default_crop_table = NoahmpIO%CROP_TYPE
+                   NoahmpIO%CROPCAT(I,J) = NoahmpIO%default_crop_table
+                   if (NoahmpIO%CROP_TYPE == 1) then
+                      NoahmpIO%LFMASSXY(I,J) = NoahmpIO%LAI(I,J) / 0.015
+                      NoahmpIO%STMASSXY(I,J) = NoahmpIO%XSAIXY(I,J) / 0.003
+                   endif
+                   if (NoahmpIO%CROP_TYPE == 2) then
+                      NoahmpIO%LFMASSXY(I,J) = NoahmpIO%LAI(I,J) / 0.030
+                      NoahmpIO%STMASSXY(I,J) = NoahmpIO%XSAIXY(I,J) / 0.003
+                   endif
+                endif
+
                 ! Noah-MP irrigation scheme
                 if ( (NoahmpIO%IOPT_IRR >= 1) .and. (NoahmpIO%IOPT_IRR <= 3) ) then
                    if ( (NoahmpIO%IOPT_IRRM == 0) .or. (NoahmpIO%IOPT_IRRM ==1) ) then       ! sprinkler
@@ -245,6 +259,25 @@ contains
                       NoahmpIO%IRFIVOL(I,J) = 0.0
                    endif
                 endif
+
+!               ! cenlin: cropsmart, user defined in namelist
+                if ((NoahmpIO%USER_DEFINE_MODE == 1) .and. (NoahmpIO%IRRIGATION_ON == 1)) then
+                   NoahmpIO%IRNUMSI(I,J) = 0
+                   NoahmpIO%IRWATSI(I,J) = NoahmpIO%IRRIGATION_AMT / 1000.0  ! mm -> m
+                   NoahmpIO%SIFRACT(I,J) = 1.0
+                   NoahmpIO%IRFRACT(I,J) = NoahmpIO%IRRIGATION_FRAC
+                   NoahmpIO%IRSIVOL(I,J) = 0.0
+                   NoahmpIO%IRELOSS(I,J) = 0.0
+                   NoahmpIO%IRRSPLH(I,J) = 0.0
+
+                   NoahmpIO%IRNUMMI(I,J) = 0
+                   NoahmpIO%IRWATMI(I,J) = 0.0
+                   NoahmpIO%IRMIVOL(I,J) = 0.0
+                   NoahmpIO%IRNUMFI(I,J) = 0
+                   NoahmpIO%IRWATFI(I,J) = 0.0
+                   NoahmpIO%IRFIVOL(I,J) = 0.0
+                endif
+
              endif
           enddo ! I
        enddo    ! J

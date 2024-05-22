@@ -109,7 +109,18 @@ contains
     integer                 :: yend                               = 0
     integer, parameter      :: MAX_SOIL_LEVELS                    = 10     ! maximum soil levels in namelist
     real(kind=kind_noahmp), dimension(MAX_SOIL_LEVELS) :: soil_thick_input ! depth to soil interfaces from namelist [m]
-    
+! new HRLDAS/NoahMP options added for user defined irrigation; cenlin, 05/20/2024
+    integer                 :: user_define_mode                   = 0
+    integer                 :: soil_type                          = -1
+    integer                 :: crop_type                          = -1
+    integer                 :: plant_date                         = -1
+    integer                 :: irrigation_on                      = 0
+    real(kind=kind_noahmp)  :: irrigation_frac                    = 0.0
+    integer                 :: irrigation_type                    = 1
+    real(kind=kind_noahmp)  :: irrigation_amt                     = 0.0 
+    real(kind=kind_noahmp)  :: irrigation_dur                     = -1.0
+! new option ends
+
     namelist / NOAHLSM_OFFLINE /    &
 #ifdef WRF_HYDRO
          finemesh,finemesh_factor,forc_typ, snow_assim , GEO_STATIC_FLNM, HRLDAS_ini_typ, &
@@ -136,8 +147,9 @@ contains
          khour, kday, zlvl, hrldas_setup_file,                                            &
          spatial_filename, agdata_flnm, tdinput_flnm,                                     &
          external_veg_filename_template, external_lai_filename_template,                  &
-         xstart, xend, ystart, yend
-
+         xstart, xend, ystart, yend,                                                      &
+         user_define_mode,soil_type,crop_type,plant_date,irrigation_on,irrigation_frac,   & !new options, cenlin 05/20/24
+         irrigation_type,irrigation_amt,irrigation_dur                                      !new options, cenlin 05/20/24
 
     !---------------------------------------------------------------
     !  Initialize namelist variables to dummy values, so we can tell
@@ -396,7 +408,19 @@ contains
     NoahmpIO%yend                              = yend
     NoahmpIO%MAX_SOIL_LEVELS                   = MAX_SOIL_LEVELS
     NoahmpIO%soil_thick_input                  = soil_thick_input 
- 
+
+    ! new options added for user defined irrigation; cenlin, 05/20/2024
+    NoahmpIO%USER_DEFINE_MODE                  = user_define_mode
+    NoahmpIO%SOIL_TYPE                         = soil_type
+    NoahmpIO%CROP_TYPE                         = crop_type
+    NoahmpIO%PLANT_DATE                        = plant_date
+    NoahmpIO%IRRIGATION_ON                     = irrigation_on
+    NoahmpIO%IRRIGATION_FRAC                   = irrigation_frac
+    NoahmpIO%IRRIGATION_TYPE                   = irrigation_type
+    NoahmpIO%IRRIGATION_AMT                    = irrigation_amt
+    NoahmpIO%IRRIGATION_DUR                    = irrigation_dur
+    ! new options end
+
 !---------------------------------------------------------------------
 !  NAMELIST check end
 !---------------------------------------------------------------------

@@ -33,6 +33,7 @@ contains
     associate(                                                                 &
               SurfaceType            => noahmp%config%domain%SurfaceType      ,& ! in,    surface type 1-soil; 2-lake
               MainTimeStep           => noahmp%config%domain%MainTimeStep     ,& ! in,    noahmp main time step [s]
+              UserDefineMode         => noahmp%config%domain%UserDefineMode   ,& ! in,    user defined mode switch, cenlin: cropsmart
               WindEastwardRefHeight  => noahmp%forcing%WindEastwardRefHeight  ,& ! in,    wind speed [m/s] in eastward direction at reference height
               WindNorthwardRefHeight => noahmp%forcing%WindNorthwardRefHeight ,& ! in,    wind speed [m/s] in northward direction at reference height
               LeafAreaIndEff         => noahmp%energy%state%LeafAreaIndEff    ,& ! in,    leaf area index, after burying by snow
@@ -43,6 +44,8 @@ contains
               CanopyLiqHoldCap       => noahmp%water%param%CanopyLiqHoldCap   ,& ! in,    maximum intercepted liquid water per unit veg area index [mm]
               RainfallRefHeight      => noahmp%water%flux%RainfallRefHeight   ,& ! in,    total liquid rainfall [mm/s] before interception
               SnowfallRefHeight      => noahmp%water%flux%SnowfallRefHeight   ,& ! in,    total snowfall [mm/s] before interception
+              IrrigationSprinklerWatAct => noahmp%water%flux%IrrigationSprinklerWatAct,& ! in, actual irrigation water after evaporation loss [mm/s], cenlin:cropsmart
+              IrrigationSprinklerType => noahmp%water%state%IrrigationSprinklerType ,& ! in,    1=above crop canopy sprinkler; 2=below canopy sprinkler; cenlin: cropsmart
               SnowfallDensity        => noahmp%water%state%SnowfallDensity    ,& ! in,    bulk density of snowfall [kg/m3]
               PrecipAreaFrac         => noahmp%water%state%PrecipAreaFrac     ,& ! in,    fraction of the gridcell that receives precipitation
               CanopyLiqWater         => noahmp%water%state%CanopyLiqWater     ,& ! inout, intercepted canopy liquid water [mm]
@@ -146,6 +149,11 @@ contains
     if ( (SurfaceType == 2) .and. (TemperatureGrd > ConstFreezePoint) ) then
        SnowfallGround = 0.0
        SnowDepthIncr  = 0.0
+    endif
+
+    ! cenlin: add for cropsmart
+    if ((UserDefineMode == 1) .and. (IrrigationSprinklerType == 2)) then
+       RainfallGround = RainfallGround + IrrigationSprinklerWatAct
     endif
 
     end associate

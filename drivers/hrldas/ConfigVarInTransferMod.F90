@@ -165,6 +165,16 @@ contains
        write(*,*) "Warning: Currently only the same options for surface and subsurface runoff are tested."
     endif
 
+    ! cenlin: add for cropsmart
+    if (NoahmpIO%USER_DEFINE_MODE == 1) then
+       noahmp%config%domain%UserDefineMode = NoahmpIO%USER_DEFINE_MODE
+       if (NoahmpIO%SOIL_TYPE > 0) &
+           noahmp%config%domain%SoilType(1:NumSoilLayer) = NoahmpIO%SOIL_TYPE
+       if (NoahmpIO%CROP_TYPE > 0) &
+          noahmp%config%domain%CropType = NoahmpIO%CROP_TYPE
+       noahmp%config%domain%VegType  = NoahmpIO%ISCROP_TABLE
+    endif
+
     end associate
 
   end subroutine ConfigVarInTransfer

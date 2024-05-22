@@ -235,6 +235,20 @@ contains
        deallocate(SoilOrg )
     endif
 
+    ! cenlin: add for cropsmart
+    if ((NoahmpIO%USER_DEFINE_MODE == 1) .and. (NoahmpIO%IRRIGATION_ON ==1)) then
+       noahmp%water%state%IrrigationFracGrid = NoahmpIO%IRRIGATION_FRAC
+       if (NoahmpIO%IRRIGATION_DUR > 0) then
+          NoahmpIO%IRRIGATION_RATE = NoahmpIO%IRRIGATION_AMT / 1000.0 / NoahmpIO%IRRIGATION_DUR ! m/s
+       else
+          NoahmpIO%IRRIGATION_RATE = -1.0
+       endif
+       noahmp%water%state%IrrigationOn               = NoahmpIO%IRRIGATION_ON
+       noahmp%water%state%IrrigationSprinklerType    = NoahmpIO%IRRIGATION_TYPE
+       noahmp%water%flux%IrrigationRateSprinkler     = NoahmpIO%IRRIGATION_RATE * noahmp%config%domain%MainTimeStep ! m/timestep
+    endif
+    ! end cenlin
+
     end associate
 
   end subroutine WaterVarInTransfer
