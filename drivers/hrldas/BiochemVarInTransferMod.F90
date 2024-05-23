@@ -121,6 +121,13 @@ contains
        noahmp%biochem%param%TurnoverCoeffStemCrop   = NoahmpIO%ST_OVRC_TABLE  (CropType,:)
        noahmp%biochem%param%TurnoverCoeffRootCrop   = NoahmpIO%RT_OVRC_TABLE  (CropType,:)
 
+   ! cenlin: add for cropsmart
+    if (NoahmpIO%USER_DEFINE_MODE == 1) then
+       if (NoahmpIO%PLANT_DATE > 0) NoahmpIO%PLANTING(I,J) = NoahmpIO%PLANT_DATE
+       if (NoahmpIO%HARVEST_DATE > 0) NoahmpIO%HARVEST(I,J) = NoahmpIO%HARVEST_DATE
+       if (NoahmpIO%GDD_TOT > 0) NoahmpIO%SEASON_GDD(I,J) = NoahmpIO%GDD_TOT
+    endif
+
        if ( OptCropModel == 1 ) then
           if (NoahmpIO%PLANTING(I,J) > 0) & ! cenlin
              noahmp%biochem%param%DatePlanting         = NoahmpIO%PLANTING(I,J)
@@ -144,12 +151,6 @@ contains
     if ( noahmp%config%nmlist%OptIrrigation == 2 ) then
        noahmp%biochem%param%DatePlanting = NoahmpIO%PLANTING(I,J)
        noahmp%biochem%param%DateHarvest  = NoahmpIO%HARVEST (I,J)
-    endif
-
-    ! cenlin: add for cropsmart
-    if (NoahmpIO%USER_DEFINE_MODE == 1) then
-       if (NoahmpIO%PLANT_DATE > 0) &
-          noahmp%biochem%param%DatePlanting = NoahmpIO%PLANT_DATE
     endif
 
     end associate

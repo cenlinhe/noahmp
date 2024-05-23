@@ -261,7 +261,8 @@ contains
                 endif
 
 !               ! cenlin: cropsmart, user defined in namelist
-                if ((NoahmpIO%USER_DEFINE_MODE == 1) .and. (NoahmpIO%IRRIGATION_ON == 1)) then
+                if ((NoahmpIO%USER_DEFINE_MODE == 1) .and. (NoahmpIO%IRRIGATION_ON == 1) .and. &
+                    (NoahmpIO%CROPCAT(I,J)>0)) then
                    NoahmpIO%IRNUMSI(I,J) = 0
                    NoahmpIO%IRWATSI(I,J) = NoahmpIO%IRRIGATION_AMT / 1000.0  ! mm -> m
                    NoahmpIO%SIFRACT(I,J) = 1.0

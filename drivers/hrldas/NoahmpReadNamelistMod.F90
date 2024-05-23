@@ -113,13 +113,15 @@ contains
     integer                 :: user_define_mode                   = 0
     integer                 :: soil_type                          = -1
     integer                 :: crop_type                          = -1
-    integer                 :: plant_date                         = -1
+    real(kind=kind_noahmp)  :: plant_date                         = -1.0
     integer                 :: irrigation_on                      = 0
     real(kind=kind_noahmp)  :: irrigation_frac                    = 0.0
     integer                 :: irrigation_type                    = 1
     real(kind=kind_noahmp)  :: irrigation_amt                     = 0.0 
     real(kind=kind_noahmp)  :: irrigation_dur                     = -1.0
-! new option ends
+    real(kind=kind_noahmp)  :: harvest_date                       = -1.0
+    real(kind=kind_noahmp)  :: gdd_tot                            = -1.0
+    ! new option ends
 
     namelist / NOAHLSM_OFFLINE /    &
 #ifdef WRF_HYDRO
@@ -149,7 +151,7 @@ contains
          external_veg_filename_template, external_lai_filename_template,                  &
          xstart, xend, ystart, yend,                                                      &
          user_define_mode,soil_type,crop_type,plant_date,irrigation_on,irrigation_frac,   & !new options, cenlin 05/20/24
-         irrigation_type,irrigation_amt,irrigation_dur                                      !new options, cenlin 05/20/24
+         irrigation_type,irrigation_amt,irrigation_dur,harvest_date,gdd_tot                 !new options, cenlin 05/20/24
 
     !---------------------------------------------------------------
     !  Initialize namelist variables to dummy values, so we can tell
@@ -419,6 +421,8 @@ contains
     NoahmpIO%IRRIGATION_TYPE                   = irrigation_type
     NoahmpIO%IRRIGATION_AMT                    = irrigation_amt
     NoahmpIO%IRRIGATION_DUR                    = irrigation_dur
+    NoahmpIO%HARVEST_DATE                      = harvest_date
+    NoahmpIO%GDD_TOT                           = gdd_tot
     ! new options end
 
 !---------------------------------------------------------------------

@@ -663,7 +663,9 @@ module NoahmpIOVarType
     integer                                                :: USER_DEFINE_MODE
     integer                                                :: SOIL_TYPE
     integer                                                :: CROP_TYPE
-    integer                                                :: PLANT_DATE
+    real(kind=kind_noahmp)                                 :: PLANT_DATE
+    real(kind=kind_noahmp)                                 :: HARVEST_DATE
+    real(kind=kind_noahmp)                                 :: GDD_TOT
     integer                                                :: IRRIGATION_ON
     real(kind=kind_noahmp)                                 :: IRRIGATION_FRAC
     integer                                                :: IRRIGATION_TYPE
