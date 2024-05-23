@@ -36,6 +36,7 @@ contains
               IrriStopPrecipThr       => noahmp%water%param%IrriStopPrecipThr       ,& ! in,    maximum precipitation to stop irrigation trigger
               IrrigationFracGrid      => noahmp%water%state%IrrigationFracGrid      ,& ! in,    total input irrigation fraction of a grid
               IrrigationOn            => noahmp%water%state%IrrigationOn            ,& ! in,    user defined irrigation switch, cenlin: cropsmart
+              IrrigationRateSprinkler => noahmp%water%flux%IrrigationRateSprinkler  ,& ! inout, rate of irrigation by sprinkler [m/timestep]
               IrrigationAmtSprinkler  => noahmp%water%state%IrrigationAmtSprinkler  ,& ! inout, irrigation water amount [m] to be applied, Sprinkler
               IrrigationAmtFlood      => noahmp%water%state%IrrigationAmtFlood      ,& ! inout, flood irrigation water amount [m]
               IrrigationAmtMicro      => noahmp%water%state%IrrigationAmtMicro      ,& ! inout, micro irrigation water amount [m]
@@ -66,6 +67,7 @@ contains
        if (IrrigationOn == 0) then
           IrrigationFracSprinkler = 0.0
           IrrigationAmtSprinkler = 0.0
+          IrrigationRateSprinkler = 0.0
        endif
 
     else ! original NoahMP irrigation scheme
