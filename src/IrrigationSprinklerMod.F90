@@ -105,9 +105,14 @@ contains
 
     ! cenlin: add for cropsmart
     if (UserDefineMode == 1) then
-       IrrigationSprinklerWatAct = max(0.0,(IrrigationRateSprinkler - IrriEvapLossSprinkler)) * 1000.0 / MainTimeStep
-       if (IrrigationSprinklerType == 1) & ! above canopy sprinkler
+       if (IrrigationSprinklerType == 1) then ! above canopy sprinkler
+          IrrigationSprinklerWatAct = max(0.0,(IrrigationRateSprinkler - IrriEvapLossSprinkler)) * 1000.0 / MainTimeStep
           RainfallRefHeight  = RainfallRefHeight + IrrigationSprinklerWatAct
+       endif
+       if (IrrigationSprinklerType == 2) then ! below canopy sprinkler, negligible evaporation
+          IrrigationSprinklerWatAct = IrrigationRateSprinkler * 1000.0 / MainTimeStep
+          IrriEvapLossSprinkler = 0.0
+       endif
 
     else ! original irrigation treatment
 

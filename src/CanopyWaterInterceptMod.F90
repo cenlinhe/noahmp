@@ -81,6 +81,9 @@ contains
     IceDripFacTemp      = 0.0
     IceDripFacWind      = 0.0
 
+    ! special treatment for sprinkler irrigation water
+    if ((PrecipAreaFrac == 0) .and. (RainfallRefHeight > 0.0)) PrecipAreaFrac = 0.1 !same as that from AtmosForcing
+
     ! ----------------------- canopy liquid water ------------------------------
     ! maximum canopy water
     CanopyLiqWaterMax =  VegFrac * CanopyLiqHoldCap * (LeafAreaIndEff + StemAreaIndEff)
