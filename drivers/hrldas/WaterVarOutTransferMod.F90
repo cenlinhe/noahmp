@@ -141,7 +141,7 @@ contains
     NoahmpIO%IRFIVOL   (I,J) = NoahmpIO%IRFIVOL(I,J)+(noahmp%water%flux%IrrigationRateFlood*1000.0)
     NoahmpIO%IRELOSS   (I,J) = NoahmpIO%IRELOSS(I,J)+(noahmp%water%flux%EvapIrriSprinkler*NoahmpIO%DTBL)
     ! cenlin: add for cropsmart
-    NoahmpIO%IRRIGATOIN_ON   = noahmp%water%state%IrrigationOn
+    NoahmpIO%IRRIGATION_ON   = noahmp%water%state%IrrigationOn
 
 #ifdef WRF_HYDRO
     NoahmpIO%infxsrt   (I,J) = max(noahmp%water%flux%RunoffSurface, 0.0)               ! mm, surface runoff

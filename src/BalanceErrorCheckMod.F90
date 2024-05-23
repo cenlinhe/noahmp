@@ -114,11 +114,12 @@ contains
     ! before water balance check, add irrigation water to precipitation
     ! cenlin: cropsmart
     if (UserDefineMode == 1) then
-       if (IrrigationOn == 1) PrecipTotRefHeight = PrecipTotRefHeight + IrrigationSprinklerWatAct   
+       if ((FlagCropland .eqv. .true.) .and. (IrrigationOn == 1)) &
+           PrecipTotRefHeight = PrecipTotRefHeight + IrrigationSprinklerWatAct   
     else
-    if ( (FlagCropland .eqv. .true.) .and. (IrrigationFracGrid >= IrriFracThreshold) ) then
-       PrecipTotRefHeight = PrecipTotRefHeight + IrrigationRateSprinkler * 1000.0 / MainTimeStep  ! irrigation
-    endif
+       if ( (FlagCropland .eqv. .true.) .and. (IrrigationFracGrid >= IrriFracThreshold) ) then
+          PrecipTotRefHeight = PrecipTotRefHeight + IrrigationRateSprinkler * 1000.0 / MainTimeStep  ! irrigation
+       endif
     endif ! UserDefineMode
 
     ! only water balance check for every soil timestep
@@ -152,10 +153,10 @@ contains
                   '("  GridIndexI  GridIndexJ  SfcWaterTotChgAcc  PrecipTotRefHeightAcc  IrrigationRateMicro       &
                        IrrigationRateFlood  EvapCanopyNetAcc  EvapGroundNetAcc  TranspirationAcc  RunoffSurface    &
                        RunoffSubsurface  WaterTableDepth  TileDrain")')
-             write(*,'(i6,i6,f10.3,10f10.5)') GridIndexI, GridIndexJ, SfcWaterTotChgAcc, PrecipTotAcc,             &
+             write(*,'(i6,i6,f10.3,11f10.5)') GridIndexI, GridIndexJ, SfcWaterTotChgAcc, PrecipTotAcc,             &
                                               IrrigationRateMicro*1000.0, IrrigationRateFlood*1000.0,              &
                                               EvapCanopyNetAcc, EvapGroundNetAcc, TranspirationAcc, RunoffSurface, &
-                                              RunoffSubsurface, WaterTableDepth, TileDrain
+                                              RunoffSubsurface,WaterTableDepth,TileDrain,IrrigationSprinklerWatAct*MainTimeStep
              stop "Error: Water budget problem in NoahMP LSM"
           endif
 #endif

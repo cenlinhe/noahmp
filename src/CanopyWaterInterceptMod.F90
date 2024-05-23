@@ -48,6 +48,7 @@ contains
               IrrigationSprinklerType => noahmp%water%state%IrrigationSprinklerType ,& ! in,    1=above crop canopy sprinkler; 2=below canopy sprinkler; cenlin: cropsmart
               SnowfallDensity        => noahmp%water%state%SnowfallDensity    ,& ! in,    bulk density of snowfall [kg/m3]
               PrecipAreaFrac         => noahmp%water%state%PrecipAreaFrac     ,& ! in,    fraction of the gridcell that receives precipitation
+              IrrigationOn           => noahmp%water%state%IrrigationOn       ,& ! in,    user defined irrigation switch, cenlin: cropsmart
               CanopyLiqWater         => noahmp%water%state%CanopyLiqWater     ,& ! inout, intercepted canopy liquid water [mm]
               CanopyIce              => noahmp%water%state%CanopyIce          ,& ! inout, intercepted canopy ice [mm]
               CanopyWetFrac          => noahmp%water%state%CanopyWetFrac      ,& ! out,   wetted or snowed fraction of the canopy
@@ -152,7 +153,7 @@ contains
     endif
 
     ! cenlin: add for cropsmart
-    if ((UserDefineMode == 1) .and. (IrrigationSprinklerType == 2)) then
+    if ((UserDefineMode == 1) .and. (IrrigationOn == 1) .and. (IrrigationSprinklerType == 2)) then
        RainfallGround = RainfallGround + IrrigationSprinklerWatAct
     endif
 

@@ -64,7 +64,7 @@ contains
     SoilIce(:) = max(0.0, SoilMoisture(:)-SoilLiqWater(:))
 
     ! cenlin: add for cropsmart
-    if ((UserDefineMode == 0) .or. (IrrigationRateSprinkler <= 0.0)) then
+    if ((UserDefineMode == 0) .or. ((IrrigationOn ==1) .and. (IrrigationRateSprinkler <=0.0))) then
 
     ! estimate infiltration rate based on Philips Eq.
     call IrrigationInfilPhilip(noahmp, MainTimeStep, InfilRateSfc)

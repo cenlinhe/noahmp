@@ -166,13 +166,14 @@ contains
     endif
 
     ! cenlin: add for cropsmart
+    noahmp%config%domain%UserDefineMode = NoahmpIO%USER_DEFINE_MODE
     if (NoahmpIO%USER_DEFINE_MODE == 1) then
-       noahmp%config%domain%UserDefineMode = NoahmpIO%USER_DEFINE_MODE
        if (NoahmpIO%SOIL_TYPE > 0) &
            noahmp%config%domain%SoilType(1:NumSoilLayer) = NoahmpIO%SOIL_TYPE
-       if (NoahmpIO%CROP_TYPE > 0) &
+       if (NoahmpIO%CROP_TYPE > 0) then
           noahmp%config%domain%CropType = NoahmpIO%CROP_TYPE
-       noahmp%config%domain%VegType  = NoahmpIO%ISCROP_TABLE
+          noahmp%config%domain%VegType  = NoahmpIO%ISCROP_TABLE ! this assumes all grids to crop, point model fine, not for 2D
+       endif
     endif
 
     end associate

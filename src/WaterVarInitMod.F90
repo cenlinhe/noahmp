@@ -196,7 +196,7 @@ contains
     noahmp%water%flux%IrriEvapLossSprinkler        = 0.0
     noahmp%water%flux%EvapIrriSprinkler            = 0.0
     noahmp%water%flux%TileDrain                    = 0.0
-    noahmp%water%flux%IrrigationSprinklerWatAct    = undefined_real
+    noahmp%water%flux%IrrigationSprinklerWatAct    = 0.0
 
     if ( .not. allocated(noahmp%water%flux%CompactionSnowAging) )   &
        allocate( noahmp%water%flux%CompactionSnowAging(-NumSnowLayerMax+1:0) )
