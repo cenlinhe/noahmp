@@ -199,6 +199,11 @@ contains
     if ( .not. allocated (NoahmpIO%IRFIVOL) ) allocate ( NoahmpIO%IRFIVOL (XSTART:XEND,YSTART:YEND) ) ! amount of irrigation by micro (mm)
     if ( .not. allocated (NoahmpIO%IRRSPLH) ) allocate ( NoahmpIO%IRRSPLH (XSTART:XEND,YSTART:YEND) ) ! latent heating from sprinkler evaporation (w/m2)
     if ( .not. allocated (NoahmpIO%LOCTIM)  ) allocate ( NoahmpIO%LOCTIM  (XSTART:XEND,YSTART:YEND) ) ! local time
+
+    ! dynamic root scheme
+    if ( NoahmpIO%IOPT_ROOT == 1 ) then
+       if ( .not. allocated (NoahmpIO%VegRoot2D)    ) allocate ( NoahmpIO%VegRoot2D     (XSTART:XEND,        YSTART:YEND) ) ! root depth 2D map [m]
+    endif
   
     ! OUT (with no Noah LSM equivalent) (as defined in WRF)   
     if ( .not. allocated (NoahmpIO%T2MVXY)     ) allocate ( NoahmpIO%T2MVXY      (XSTART:XEND,YSTART:YEND) ) ! 2m temperature of vegetation part
@@ -889,6 +894,11 @@ contains
     if ( NoahmpIO%IOPT_WETLAND == 2 ) then
        NoahmpIO%FSATMX       = undefined_real
        NoahmpIO%WCAP         = undefined_real
+    endif
+
+    ! dynamic root scheme
+    if ( NoahmpIO%IOPT_ROOT == 1 ) then
+       NoahmpIO%VegRoot2D    = undefined_real
     endif
 
     ! spatial varying soil texture

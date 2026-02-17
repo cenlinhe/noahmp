@@ -191,6 +191,18 @@ contains
     noahmp%water%param%SoilDrainSlope                     = NoahmpIO%SLOPE_TABLE(RunoffSlopeType)
     noahmp%water%param%WetlandCapMax                      = NoahmpIO%WCAP_TABLE
 
+    ! read in root depth input map not using table value
+    if ( noahmp%config%nmlist%OptDynamicRoot == 1 ) then
+       do IndexSoilLayer = NumSoilLayer, 1, -1
+          if ( NoahmpIO%VegRoot2D(I,J) <= -NoahmpIO%ZSOIL(IndexSoilLayer) ) then
+             noahmp%water%param%NumSoilLayerRoot = IndexSoilLayer
+          endif
+       enddo
+       if ( NoahmpIO%VegRoot2D(I,J) > -NoahmpIO%ZSOIL(NumSoilLayer) ) then
+          noahmp%water%param%NumSoilLayerRoot = NumSoilLayer
+       endif
+    endif
+
     ! SNICAR
     if ( noahmp%config%nmlist%OptSnowAlbedo == 3 )then
        noahmp%water%param%snowage_tau                     = NoahmpIO%snowage_tau

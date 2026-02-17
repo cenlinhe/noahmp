@@ -83,6 +83,7 @@ contains
     integer                 :: snow_thermal_conductivity          = 1
     integer                 :: snow_compaction_option             = 2 
     integer                 :: snow_cover_option                  = 1
+    integer                 :: dynamic_root_option                = 0
     integer                 :: pcp_partition_option               = 1
     integer                 :: tbot_option                        = 2
     integer                 :: temp_time_scheme_option            = 1
@@ -161,7 +162,7 @@ contains
          sf_urban_physics,use_wudapt_lcz,num_urban_hi,urban_atmosphere_thickness,         &
          num_urban_ndm,num_urban_ng,num_urban_nwr ,num_urban_ngb ,                        &
          num_urban_nf ,num_urban_nz,num_urban_nbui,num_urban_ngr ,                        &
-         split_output_count,                                                              & 
+         split_output_count, dynamic_root_option,                                         & 
          khour, kday, zlvl, hrldas_setup_file,                                            &
          spatial_filename, agdata_flnm, tdinput_flnm, snicar_optic_flnm, snicar_age_flnm, &
          external_veg_filename_template, external_lai_filename_template,                  &
@@ -380,6 +381,7 @@ contains
     NoahmpIO%IOPT_COMPACT                      = snow_compaction_option
     NoahmpIO%IOPT_WETLAND                      = wetland_option
     NoahmpIO%IOPT_SCF                          = snow_cover_option
+    NoahmpIO%IOPT_ROOT                         = dynamic_root_option
     ! basic model setup variables
     NoahmpIO%indir                             = indir
     NoahmpIO%forcing_timestep                  = forcing_timestep

@@ -66,6 +66,7 @@ module NoahmpIOVarType
     integer                                                ::  IOPT_COMPACT        ! snowpack compaction (1->Anderson1976; 2->Abolafia-Rosenzweig2024)
     integer                                                ::  IOPT_SCF            ! snow cover fraction (1->NiuYang07; 2->Abolafia-Rosenzweig2025)
     integer                                                ::  IOPT_WETLAND        ! wetland model option (0->off; 1->Zhang2022 fixed parameter; 2->Zhang2022 read in 2D parameter)
+    integer                                                ::  IOPT_ROOT           ! dynamic vegetation root option (0->table value; 1->Input Map)
     real(kind=kind_noahmp)                                 ::  XICE_THRESHOLD      ! fraction of grid determining seaice
     real(kind=kind_noahmp)                                 ::  JULIAN              ! Julian day
     real(kind=kind_noahmp)                                 ::  DTBL                ! timestep [s]
@@ -159,6 +160,7 @@ module NoahmpIOVarType
     real(kind=kind_noahmp), allocatable, dimension(:,:)    ::  TD_DDRAIN           ! depth of drain
     real(kind=kind_noahmp), allocatable, dimension(:,:)    ::  TD_RADI             ! tile radius
     real(kind=kind_noahmp), allocatable, dimension(:,:)    ::  TD_SPAC             ! tile spacing
+    real(kind=kind_noahmp), allocatable, dimension(:,:)    ::  VegRoot2D           ! root depth spatial distribution (m)
 
     ! INOUT (with generic LSM equivalent) (as defined in WRF)
     real(kind=kind_noahmp), allocatable, dimension(:,:)    ::  TSK                 ! surface radiative temperature [K]
