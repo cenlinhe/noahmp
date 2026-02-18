@@ -787,6 +787,7 @@ module NoahmpIOVarType
     character(len=256)                                     ::  external_lai_filename_template
     character(len=256)                                     ::  agdata_flnm
     character(len=256)                                     ::  tdinput_flnm
+    character(len=256)                                     ::  root_input_file
     character(len=256)                                     ::  snicar_optic_flnm  ! SNICAR filename for optics parameters
     character(len=256)                                     ::  snicar_age_flnm    ! SNICAR filename for snow aging parameters
     integer                                                ::  xstart

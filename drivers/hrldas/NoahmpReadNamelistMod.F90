@@ -108,6 +108,7 @@ contains
     character(len=256)      :: external_lai_filename_template     = " "
     character(len=256)      :: agdata_flnm                        = " "
     character(len=256)      :: tdinput_flnm                       = " "
+    character(len=256)      :: root_input_file                    = " "
     character(len=256)      :: snicar_optic_flnm                  = "snicar_optics_5bnd_c013122.nc"
     character(len=256)      :: snicar_age_flnm                    = "snicar_drdt_bst_fit_60_c070416.nc"
     integer                 :: xstart                             = 1
@@ -163,7 +164,7 @@ contains
          num_urban_ndm,num_urban_ng,num_urban_nwr ,num_urban_ngb ,                        &
          num_urban_nf ,num_urban_nz,num_urban_nbui,num_urban_ngr ,                        &
          split_output_count, dynamic_root_option,                                         & 
-         khour, kday, zlvl, hrldas_setup_file,                                            &
+         khour, kday, zlvl, hrldas_setup_file, root_input_file,                           &
          spatial_filename, agdata_flnm, tdinput_flnm, snicar_optic_flnm, snicar_age_flnm, &
          external_veg_filename_template, external_lai_filename_template,                  &
          xstart, xend, ystart, yend,                                                      &
@@ -431,6 +432,7 @@ contains
     NoahmpIO%external_lai_filename_template    = external_lai_filename_template
     NoahmpIO%agdata_flnm                       = agdata_flnm
     NoahmpIO%tdinput_flnm                      = tdinput_flnm
+    NoahmpIO%root_input_file                   = root_input_file
     NoahmpIO%xstart                            = xstart
     NoahmpIO%ystart                            = ystart
     NoahmpIO%xend                              = xend
