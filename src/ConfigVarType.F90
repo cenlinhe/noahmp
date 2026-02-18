@@ -131,6 +131,9 @@ module ConfigVarType
                                               ! 0 -> No Wetland model
                                               ! 1 -> Single-point/uniform parameter (Zhang, et al. 2022 WRR)
                                               ! 2 -> 2-D regional parameter input (Zhang, et al. 2022 WRR)
+    integer :: OptDynamicRoot              ! option for dynamic root scheme
+                                              ! 0 -> No dynamic root (read NROOT from NoahmpTable.TBL)
+                                              ! 1 -> read in 2D spatially varying root depth as input
     integer :: OptSnicarSnowShape          ! options for snow grain shape in SNICAR (He et al. 2017 JC)
                                               ! 1 -> sphere
                                               ! 2 -> spheroid
