@@ -160,7 +160,8 @@ module NoahmpIOVarType
     real(kind=kind_noahmp), allocatable, dimension(:,:)    ::  TD_DDRAIN           ! depth of drain
     real(kind=kind_noahmp), allocatable, dimension(:,:)    ::  TD_RADI             ! tile radius
     real(kind=kind_noahmp), allocatable, dimension(:,:)    ::  TD_SPAC             ! tile spacing
-    real(kind=kind_noahmp), allocatable, dimension(:,:)    ::  VegRoot2D           ! root depth spatial distribution (m)
+    real(kind=kind_noahmp), allocatable, dimension(:,:)    ::  VegRoot2D           ! climotological annual root depth spatial distribution (m)
+    real(kind=kind_noahmp), allocatable, dimension(:,:,:)  ::  VegRoot3D           ! climotological monthly root depth spatial distribution (m)
 
     ! INOUT (with generic LSM equivalent) (as defined in WRF)
     real(kind=kind_noahmp), allocatable, dimension(:,:)    ::  TSK                 ! surface radiative temperature [K]

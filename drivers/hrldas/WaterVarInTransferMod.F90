@@ -29,6 +29,11 @@ contains
 
     ! local variables 
     integer                            :: IndexSoilLayer
+    integer                            :: IntpMonth1,IntpMonth2   ! interpolation months
+    real(kind=kind_noahmp)             :: DayCurrent              ! current day of year (0<=DayCurrent<NumDayInYear)
+    real(kind=kind_noahmp)             :: VegRootInt              ! interpolated root depth from monthly data
+    real(kind=kind_noahmp)             :: IntpWgt1,IntpWgt2       ! interpolation weights
+    real(kind=kind_noahmp)             :: MonthCurrent            ! current month (1.00, ..., 12.00)
     real(kind=kind_noahmp), allocatable, dimension(:) :: SoilSand
     real(kind=kind_noahmp), allocatable, dimension(:) :: SoilClay
     real(kind=kind_noahmp), allocatable, dimension(:) :: SoilOrg
@@ -192,6 +197,7 @@ contains
     noahmp%water%param%WetlandCapMax                      = NoahmpIO%WCAP_TABLE
 
     ! read in root depth input map not using table value
+    ! annual root depth data (unit: m)
     if ( noahmp%config%nmlist%OptDynamicRoot == 1 ) then
        do IndexSoilLayer = NumSoilLayer, 1, -1
           if ( NoahmpIO%VegRoot2D(I,J) <= -NoahmpIO%ZSOIL(IndexSoilLayer) ) then
@@ -199,6 +205,27 @@ contains
           endif
        enddo
        if ( NoahmpIO%VegRoot2D(I,J) > -NoahmpIO%ZSOIL(NumSoilLayer) ) then
+          noahmp%water%param%NumSoilLayerRoot = NumSoilLayer
+       endif
+    endif
+    ! monthly root depth data (unit: m)
+    if ( noahmp%config%nmlist%OptDynamicRoot == 2 ) then
+       ! interpolate from monthly data to target time point
+       DayCurrent   = noahmp%config%domain%DayJulianInYear
+       MonthCurrent = 12.0 * DayCurrent / real(noahmp%config%domain%NumDayInYear)
+       IntpMonth1   = MonthCurrent + 0.5
+       IntpMonth2   = IntpMonth1 + 1
+       IntpWgt1     = (IntpMonth1 + 0.5) - MonthCurrent
+       IntpWgt2     = 1.0 - IntpWgt1
+       if ( IntpMonth1 <  1 ) IntpMonth1 = 12
+       if ( IntpMonth2 > 12 ) IntpMonth2 = 1
+       VegRootInt = IntpWgt1 * NoahmpIO%VegRoot3D(I,J,IntpMonth1) + IntpWgt2 * NoahmpIO%VegRoot3D(I,J,IntpMonth2)
+       do IndexSoilLayer = NumSoilLayer, 1, -1
+          if ( VegRootInt <= -NoahmpIO%ZSOIL(IndexSoilLayer) ) then
+             noahmp%water%param%NumSoilLayerRoot = IndexSoilLayer
+          endif
+       enddo
+       if ( VegRootInt > -NoahmpIO%ZSOIL(NumSoilLayer) ) then
           noahmp%water%param%NumSoilLayerRoot = NumSoilLayer
        endif
     endif

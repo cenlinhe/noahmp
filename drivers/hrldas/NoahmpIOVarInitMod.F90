@@ -204,7 +204,10 @@ contains
     if ( NoahmpIO%IOPT_ROOT == 1 ) then
        if ( .not. allocated (NoahmpIO%VegRoot2D)    ) allocate ( NoahmpIO%VegRoot2D     (XSTART:XEND,        YSTART:YEND) ) ! root depth 2D map [m]
     endif
-  
+    if ( NoahmpIO%IOPT_ROOT == 2 ) then
+       if ( .not. allocated (NoahmpIO%VegRoot3D)    ) allocate ( NoahmpIO%VegRoot3D     (XSTART:XEND, YSTART:YEND, 1:12) ) ! root depth 3D map [m]
+    endif
+ 
     ! OUT (with no Noah LSM equivalent) (as defined in WRF)   
     if ( .not. allocated (NoahmpIO%T2MVXY)     ) allocate ( NoahmpIO%T2MVXY      (XSTART:XEND,YSTART:YEND) ) ! 2m temperature of vegetation part
     if ( .not. allocated (NoahmpIO%T2MBXY)     ) allocate ( NoahmpIO%T2MBXY      (XSTART:XEND,YSTART:YEND) ) ! 2m temperature of bare ground part
@@ -899,6 +902,9 @@ contains
     ! dynamic root scheme
     if ( NoahmpIO%IOPT_ROOT == 1 ) then
        NoahmpIO%VegRoot2D    = undefined_real
+    endif
+    if ( NoahmpIO%IOPT_ROOT == 2 ) then
+       NoahmpIO%VegRoot3D    = undefined_real
     endif
 
     ! spatial varying soil texture
