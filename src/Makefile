@@ -1,9 +1,34 @@
 # Makefile 
-#
+
 .SUFFIXES:
 .SUFFIXES: .o .F90
 
+# Detect MPAS build from CPPFLAGS
+ifneq (,$(findstring -DNOAHMP_MPAS,$(CPPFLAGS)))
+NOAHMP_MPAS_BUILD = yes
+endif
+
+
+ifdef NOAHMP_MPAS_BUILD
+
+.PHONY: src src_lib
+# The Noah-MP code fails to build with the GNU compilers with -std=f2008,
+# so remove that flag here if it is present in FFLAGS
+FFLAGS_NONSTD = $(shell printf "%s" "$(FFLAGS)" | sed -e 's/-std=f2008//g' )
+all: dummy src
+dummy:
+	@echo "****** compiling physics_noahmp/utility ******"
+src: $(OBJS)
+src_lib:
+	ar -ru ./../../libphys.a $(OBJS)
+else
+
 include ../../hrldas/user_build_options
+
+all: $(OBJS)
+
+endif
+
 
 OBJS = ConstantDefineMod.o \
        ConfigVarType.o \
@@ -141,17 +166,6 @@ OBJS = ConstantDefineMod.o \
        SurfaceRadiationGlacierMod.o \
        WaterMainGlacierMod.o
 
-all:	$(OBJS)
-
-.F90.o:
-	@echo ""
-	$(RM) $(*).f90
-	$(CPP) $(CPPFLAGS) $(*).F90 > $(*).f90
-	$(COMPILERF90) -c -I. -I../utility -I../drivers/hrldas $(F90FLAGS) $(FREESOURCE) $(NETCDFMOD) $(*).f90
-	@echo ""
-
-clean:
-	rm -f *.o *.mod *.exe *.f90
 
 #
 # Dependencies:
@@ -365,4 +379,24 @@ SurfaceEnergyFluxGlacierMod.o:           ../utility/Machine.o NoahmpVarType.o Co
                                          VaporPressureSaturationMod.o ResistanceBareGroundMostMod.o
 SurfaceRadiationGlacierMod.o:            ../utility/Machine.o NoahmpVarType.o ConstantDefineMod.o
 WaterMainGlacierMod.o:                   ../utility/Machine.o NoahmpVarType.o ConstantDefineMod.o SnowWaterMainGlacierMod.o
+
+
+ifdef NOAHMP_MPAS_BUILD
+
+.F90.o:
+	$(FC) $(CPPFLAGS) $(COREDEF) $(FFLAGS_NONSTD) -c $*.F90 $(CPPINCLUDES) $(FCINCLUDES) -I../utility -I../../../../framework
+
+else
+
+.F90.o:
+	@echo ""
+	$(RM) $(*).f90
+	$(CPP) $(CPPFLAGS) $(*).F90 > $(*).f90
+	$(COMPILERF90) -c -I. -I../utility -I../drivers/hrldas $(F90FLAGS) $(FREESOURCE) $(NETCDFMOD) $(*).f90
+	@echo ""
+
+endif
+
+clean:
+	$(RM) *.o *.mod *.exe *.f90 *.i 
 
