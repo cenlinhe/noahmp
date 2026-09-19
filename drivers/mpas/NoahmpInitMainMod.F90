@@ -121,7 +121,7 @@ contains
        enddo ! I
 
        ! initilize other quantities
-       do I = its, itf
+       do I = its, ite
           NoahmpIO%QTDRAIN(I)  = 0.0
           NoahmpIO%TVXY(I)     = NoahmpIO%TSK(I)
           NoahmpIO%TGXY(I)     = NoahmpIO%TSK(I)

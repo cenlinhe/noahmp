@@ -8,25 +8,9 @@ ifneq (,$(findstring -DNOAHMP_MPAS,$(CPPFLAGS)))
 NOAHMP_MPAS_BUILD = yes
 endif
 
-
-ifdef NOAHMP_MPAS_BUILD
-
-.PHONY: src src_lib
-# The Noah-MP code fails to build with the GNU compilers with -std=f2008,
-# so remove that flag here if it is present in FFLAGS
-FFLAGS_NONSTD = $(shell printf "%s" "$(FFLAGS)" | sed -e 's/-std=f2008//g' )
-all: dummy src
-dummy:
-	@echo "****** compiling physics_noahmp/utility ******"
-src: $(OBJS)
-src_lib:
-	ar -ru ./../../libphys.a $(OBJS)
-else
-
+# Only HRLDAS/community build needs this
+ifndef NOAHMP_MPAS_BUILD
 include ../../hrldas/user_build_options
-
-all: $(OBJS)
-
 endif
 
 
@@ -165,6 +149,25 @@ OBJS = ConstantDefineMod.o \
        SurfaceEnergyFluxGlacierMod.o \
        SurfaceRadiationGlacierMod.o \
        WaterMainGlacierMod.o
+
+
+ifdef NOAHMP_MPAS_BUILD
+
+.PHONY: src src_lib
+# The Noah-MP code fails to build with the GNU compilers with -std=f2008,
+# so remove that flag here if it is present in FFLAGS
+FFLAGS_NONSTD = $(shell printf "%s" "$(FFLAGS)" | sed -e 's/-std=f2008//g' )
+all: dummy src
+dummy:
+	@echo "****** compiling physics_noahmp/src ******"
+src: $(OBJS)
+src_lib:
+	ar -ru ./../../libphys.a $(OBJS)
+else
+
+all: $(OBJS)
+
+endif
 
 
 #

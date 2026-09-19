@@ -8,6 +8,16 @@ ifneq (,$(findstring -DNOAHMP_MPAS,$(CPPFLAGS)))
 NOAHMP_MPAS_BUILD = yes
 endif
 
+# Only HRLDAS/community build needs this
+ifndef NOAHMP_MPAS_BUILD
+include ../../hrldas/user_build_options
+endif
+
+
+OBJS = Machine.o \
+       CheckNanMod.o \
+       PiecewiseLinearInterp1dMod.o
+#      ErrorHandleMod.o
 
 ifdef NOAHMP_MPAS_BUILD
 
@@ -21,17 +31,9 @@ utility_lib:
 
 else
 
-include ../../hrldas/user_build_options
-
 all: $(OBJS)
 
 endif
-
-
-OBJS = Machine.o \
-       CheckNanMod.o \
-       PiecewiseLinearInterp1dMod.o
-#      ErrorHandleMod.o
 
 #
 # Dependencies:
