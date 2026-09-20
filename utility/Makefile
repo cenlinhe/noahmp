@@ -8,9 +8,12 @@ ifneq (,$(findstring -DNOAHMP_MPAS,$(CPPFLAGS)))
 NOAHMP_MPAS_BUILD = yes
 endif
 
-# Only HRLDAS/community build needs this
+# Only HRLDAS/community compilation needs this file.
+# It is not needed for "make clean".
+ifneq ($(MAKECMDGOALS),clean)
 ifndef NOAHMP_MPAS_BUILD
 include ../../hrldas/user_build_options
+endif
 endif
 
 

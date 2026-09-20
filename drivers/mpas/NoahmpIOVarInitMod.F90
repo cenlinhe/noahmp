@@ -39,6 +39,8 @@ contains
     ! Input variables
     if ( .not. allocated (NoahmpIO%COSZEN)    ) allocate ( NoahmpIO%COSZEN     (ITS:ITE         ) ) ! cosine zenith angle
     if ( .not. allocated (NoahmpIO%XLAT)      ) allocate ( NoahmpIO%XLAT       (ITS:ITE         ) ) ! latitude [radians] 
+    if ( .not. allocated (NoahmpIO%DX)        ) allocate ( NoahmpIO%DX         (ITS:ITE         ) ) ! grid spacing [m] 
+    if ( .not. allocated (NoahmpIO%DY)        ) allocate ( NoahmpIO%DY         (ITS:ITE         ) ) ! grid spacing [m]  
     if ( .not. allocated (NoahmpIO%DZS)       ) allocate ( NoahmpIO%DZS        (1:NSOIL         ) ) ! thickness of soil layers [m]
     if ( .not. allocated (NoahmpIO%ZSOIL)     ) allocate ( NoahmpIO%ZSOIL      (1:NSOIL         ) ) ! depth to soil interfaces [m] 
     if ( .not. allocated (NoahmpIO%IVGTYP)    ) allocate ( NoahmpIO%IVGTYP     (ITS:ITE         ) ) ! vegetation type
@@ -577,6 +579,8 @@ contains
     NoahmpIO%ISNOWXY         = undefined_int
     NoahmpIO%COSZEN          = undefined_real
     NoahmpIO%XLAT            = undefined_real
+    NoahmpIO%DX              = undefined_real 
+    NoahmpIO%DY              = undefined_real 
     NoahmpIO%DZ8W            = undefined_real
     NoahmpIO%DZS             = undefined_real
     NoahmpIO%ZSOIL           = undefined_real

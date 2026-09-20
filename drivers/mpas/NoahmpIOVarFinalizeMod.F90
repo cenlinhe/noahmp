@@ -33,6 +33,8 @@ contains
     ! Input variables
     if ( allocated (NoahmpIO%coszen)    ) deallocate ( NoahmpIO%coszen              ) ! cosine zenith angle
     if ( allocated (NoahmpIO%xlat)      ) deallocate ( NoahmpIO%xlat                ) ! latitude [radians]
+    if ( allocated (NoahmpIO%dx)        ) deallocate ( NoahmpIO%dx                  ) ! latitude [radians]
+    if ( allocated (NoahmpIO%dy)        ) deallocate ( NoahmpIO%dy                  ) ! latitude [radians]
     if ( allocated (NoahmpIO%dzs)       ) deallocate ( NoahmpIO%dzs                 ) ! thickness of soil layers [m]
     if ( allocated (NoahmpIO%zsoil)     ) deallocate ( NoahmpIO%zsoil               ) ! depth to soil interfaces [m]
     if ( allocated (NoahmpIO%ivgtyp)    ) deallocate ( NoahmpIO%ivgtyp              ) ! vegetation type

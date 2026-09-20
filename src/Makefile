@@ -8,9 +8,12 @@ ifneq (,$(findstring -DNOAHMP_MPAS,$(CPPFLAGS)))
 NOAHMP_MPAS_BUILD = yes
 endif
 
-# Only HRLDAS/community build needs this
+# Only HRLDAS/community compilation needs this file.
+# It is not needed for "make clean".
+ifneq ($(MAKECMDGOALS),clean)
 ifndef NOAHMP_MPAS_BUILD
 include ../../hrldas/user_build_options
+endif
 endif
 
 
@@ -282,7 +285,6 @@ SnowAlbedoClassMod.o:                 ../utility/Machine.o NoahmpVarType.o Const
 SnowAlbedoSnicarMod.o:                ../utility/Machine.o NoahmpVarType.o ConstantDefineMod.o \
                                       SnowRadiationSnicarMod.o
 SnowFreshRadiusMod.o:                 ../utility/Machine.o NoahmpVarType.o ConstantDefineMod.o
-SnowInputSnicarMod.o:                 ../utility/Machine.o ../drivers/hrldas/NoahmpIOVarType.o
 SnowRadiationSnicarMod.o:             ../utility/Machine.o ../utility/PiecewiseLinearInterp1dMod.o \
                                       NoahmpVarType.o ConstantDefineMod.o
 SurfaceAlbedoMod.o:                   ../utility/Machine.o NoahmpVarType.o ConstantDefineMod.o \
@@ -383,11 +385,17 @@ SurfaceEnergyFluxGlacierMod.o:           ../utility/Machine.o NoahmpVarType.o Co
 SurfaceRadiationGlacierMod.o:            ../utility/Machine.o NoahmpVarType.o ConstantDefineMod.o
 WaterMainGlacierMod.o:                   ../utility/Machine.o NoahmpVarType.o ConstantDefineMod.o SnowWaterMainGlacierMod.o
 
+ifdef NOAHMP_MPAS_BUILD
+SnowInputSnicarMod.o: ../utility/Machine.o ../drivers/mpas/NoahmpIOVarType.o
+else
+SnowInputSnicarMod.o: ../utility/Machine.o ../drivers/hrldas/NoahmpIOVarType.o
+endif
 
 ifdef NOAHMP_MPAS_BUILD
 
 .F90.o:
-	$(FC) $(CPPFLAGS) $(COREDEF) $(FFLAGS_NONSTD) -c $*.F90 $(CPPINCLUDES) $(FCINCLUDES) -I../utility -I../../../../framework
+	$(FC) $(CPPFLAGS) $(COREDEF) $(FFLAGS_NONSTD) -c $*.F90 \
+	$(CPPINCLUDES) $(FCINCLUDES) -I../utility -I../drivers/mpas -I../../../../framework
 
 else
 

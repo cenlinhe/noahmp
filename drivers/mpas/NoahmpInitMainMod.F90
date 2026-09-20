@@ -159,7 +159,7 @@ contains
              NoahmpIO%WAXY(I)   = 0.0
              NoahmpIO%WTXY(I)   = 0.0
              ! for MPAS, it is defined in mpas_atmphys_lsm_noahmpinit.F
-             !NoahmpIO%AREAXY(I) = (max(10.0,NoahmpIO%DX) * max(10.0,NoahmpIO%DY)) / &
+             !NoahmpIO%AREAXY(I) = (max(10.0,NoahmpIO%DX(I)) * max(10.0,NoahmpIO%DY(I))) / &
              !                       (NoahmpIO%MSFTX(I) * NoahmpIO%MSFTY(I))
           endif
 

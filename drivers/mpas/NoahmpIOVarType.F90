@@ -65,7 +65,6 @@ module NoahmpIOVarType
     real(kind=kind_noahmp)                                 ::  XICE_THRESHOLD      ! fraction of grid determining seaice
     real(kind=kind_noahmp)                                 ::  JULIAN              ! Julian day
     real(kind=kind_noahmp)                                 ::  DTBL                ! timestep [s]
-    real(kind=kind_noahmp)                                 ::  DX                  ! horizontal grid spacing [m]
     real(kind=kind_noahmp)                                 ::  soiltstep           ! soil time step (s) (default=0: same as main NoahMP timstep)
     logical                                                ::  FNDSNOWH            ! snow depth present in input
     logical                                                ::  calculate_soil      ! logical index for if do soil calculation
@@ -74,6 +73,8 @@ module NoahmpIOVarType
     integer,                allocatable, dimension(:)      ::  ISLTYP              ! soil type
     real(kind=kind_noahmp), allocatable, dimension(:)      ::  COSZEN              ! cosine zenith angle
     real(kind=kind_noahmp), allocatable, dimension(:)      ::  XLAT                ! latitude [rad]
+    real(kind=kind_noahmp), allocatable, dimension(:)      ::  DX                  ! horizontal grid spacing [m]
+    real(kind=kind_noahmp), allocatable, dimension(:)      ::  DY                  ! horizontal grid spacing [m]
     real(kind=kind_noahmp), allocatable, dimension(:,:)    ::  DZ8W                ! thickness of atmo layers [m]
     real(kind=kind_noahmp), allocatable, dimension(:)      ::  DZS                 ! thickness of soil layers [m]
     real(kind=kind_noahmp), allocatable, dimension(:)      ::  ZSOIL               ! depth to soil interfaces [m]
@@ -706,7 +707,6 @@ module NoahmpIOVarType
 
     integer                                                ::  IX
     integer                                                ::  JX
-    real(kind=kind_noahmp)                                 ::  DY
     real(kind=kind_noahmp)                                 ::  TRUELAT1
     real(kind=kind_noahmp)                                 ::  TRUELAT2
     real(kind=kind_noahmp)                                 ::  CEN_LON
