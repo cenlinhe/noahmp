@@ -139,7 +139,9 @@ contains
     NoahmpIO%Q2MVXY  (I) = noahmp%energy%state%SpecHumidity2mVeg /(1.0-noahmp%energy%state%SpecHumidity2mVeg)  ! spec humidity to mixing ratio
     NoahmpIO%Q2MBXY  (I) = noahmp%energy%state%SpecHumidity2mBare/(1.0-noahmp%energy%state%SpecHumidity2mBare)
     NoahmpIO%Q2MXY   (I) = NoahmpIO%Q2MBXY(I) * ( 1 - NoahmpIO%FVEGXY(I) ) + NoahmpIO%Q2MVXY(I) * NoahmpIO%FVEGXY(I)
-    NoahmpIO%ALBEDO  (I) = noahmp%energy%state%AlbedoSfc
+    if ( (noahmp%energy%state%AlbedoSfc >= 0.0) .and. (noahmp%energy%state%AlbedoSfc <= 1.0) ) then
+       NoahmpIO%ALBEDO(I) = noahmp%energy%state%AlbedoSfc
+    endif
     NoahmpIO%IRRSPLH (I) = NoahmpIO%IRRSPLH(I) + &
                              (noahmp%energy%flux%HeatLatentIrriEvap * noahmp%config%domain%MainTimeStep)
     NoahmpIO%TSLB    (I,1:NumSoilLayer)       = noahmp%energy%state%TemperatureSoilSnow(1:NumSoilLayer)
