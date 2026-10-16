@@ -18,9 +18,7 @@ contains
 		                GLW,          P8W3D,         RAINBL,       DZ8W,      ZNT,  & ! IN : Forcing
                                 TSK,            HFX,            QFX,         LH,   GRDFLX,  & ! IN/OUT : LSM 
 		             ALBEDO,          EMISS,           QSFC,                        & ! IN/OUT : LSM 
-                            ids,ide,        jds,jde,        kds,kde,                        &
-                            ims,ime,        jms,jme,        kms,kme,                        &
-                            its,ite,        jts,jte,        kts,kte,                        &
+                            its,ite,        kts,kte,                                        &
                          cmr_sfcdif,     chr_sfcdif,     cmc_sfcdif,                        &
 	                 chc_sfcdif,    cmgr_sfcdif,    chgr_sfcdif,                        &
                            tr_urb2d,       tb_urb2d,       tg_urb2d,                        & !H urban
@@ -85,8 +83,9 @@ contains
     type(NoahmpIO_type),           intent(in   ) :: NoahmpIO
     INTEGER,                       INTENT(IN   ) :: sf_urban_physics   ! urban physics option
     INTEGER,                       INTENT(IN   ) :: NSOIL              ! number of soil layers
-    INTEGER, DIMENSION( its:ite ), INTENT(IN   ) :: IVGTYP             ! vegetation type
     INTEGER,                       INTENT(IN   ) :: ITIMESTEP          ! titestep number
+    INTEGER,                       INTENT(IN   ) :: its,ite, kts,kte
+    INTEGER, DIMENSION( its:ite ), INTENT(IN   ) :: IVGTYP             ! vegetation type
     REAL(kind=RKIND),              INTENT(IN   ) :: DT                 ! titestep [s]
     REAL(kind=RKIND),    DIMENSION( its:ite          ), INTENT(IN   ) ::  COSZ_URB2D
     REAL(kind=RKIND),    DIMENSION( its:ite          ), INTENT(IN   ) ::  XLAT_URB2D
@@ -110,10 +109,6 @@ contains
     REAL(kind=RKIND),    DIMENSION( its:ite          ), INTENT(INOUT) ::  ALBEDO    ! total grid albedo []
     REAL(kind=RKIND),    DIMENSION( its:ite          ), INTENT(INOUT) ::  EMISS     ! surface bulk emissivity
     REAL(kind=RKIND),    DIMENSION( its:ite          ), INTENT(INOUT) ::  QSFC      ! bulk surface mixing ratio
-
-    INTEGER,  INTENT(IN   )   ::     ids,ide, jds,jde, kds,kde,  &  ! d -> domain
-         &                           ims,ime, jms,jme, kms,kme,  &  ! m -> memory
-         &                           its,ite, jts,jte, kts,kte      ! t -> tile
 
      ! input variables surface_driver --> lsm
 
