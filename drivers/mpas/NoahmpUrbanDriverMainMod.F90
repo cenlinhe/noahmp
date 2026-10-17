@@ -64,8 +64,10 @@ contains
                             a_u_bep,        a_v_bep,        a_t_bep,    a_q_bep,            & !O multi-layer urban
                             a_e_bep,        b_u_bep,        b_v_bep,                        & !O multi-layer urban
                             b_t_bep,        b_q_bep,        b_e_bep,    dlg_bep,            & !O multi-layer urban
-                           dl_u_bep,         sf_bep,         vl_bep                         & !O multi-layer urban
-                 )
+                           dl_u_bep,         sf_bep,         vl_bep,                        & !O multi-layer urban
+                                 T2,             Q2,           PSFC,        TH2,            &
+                                U10,            V10,           PSIM,       PSIH,            &
+                             GZ1OZ0, distributed_ahe_opt, gmt,xtime,  ahe_urb2d             )
 
   USE module_sf_urban,        only: urban
 !  USE module_sf_bep,          only: bep
@@ -85,8 +87,10 @@ contains
     INTEGER,                       INTENT(IN   ) :: NSOIL              ! number of soil layers
     INTEGER,                       INTENT(IN   ) :: ITIMESTEP          ! titestep number
     INTEGER,                       INTENT(IN   ) :: its,ite, kts,kte
+    INTEGER,                       INTENT(IN   ) :: distributed_ahe_opt
     INTEGER, DIMENSION( its:ite ), INTENT(IN   ) :: IVGTYP             ! vegetation type
     REAL(kind=RKIND),              INTENT(IN   ) :: DT                 ! titestep [s]
+    REAL(kind=RKIND), OPTIONAL,    INTENT(IN   ) :: gmt, xtime
     REAL(kind=RKIND),    DIMENSION( its:ite          ), INTENT(IN   ) ::  COSZ_URB2D
     REAL(kind=RKIND),    DIMENSION( its:ite          ), INTENT(IN   ) ::  XLAT_URB2D
     REAL(kind=RKIND),    DIMENSION( kts:kte, its:ite ), INTENT(IN   ) ::  T3D       ! 3D atmospheric temperature valid at mid-levels [K]
@@ -109,8 +113,17 @@ contains
     REAL(kind=RKIND),    DIMENSION( its:ite          ), INTENT(INOUT) ::  ALBEDO    ! total grid albedo []
     REAL(kind=RKIND),    DIMENSION( its:ite          ), INTENT(INOUT) ::  EMISS     ! surface bulk emissivity
     REAL(kind=RKIND),    DIMENSION( its:ite          ), INTENT(INOUT) ::  QSFC      ! bulk surface mixing ratio
+    REAL(kind=RKIND),    DIMENSION( its:ite          ), INTENT(INOUT) ::  Q2        ! 2-m mixing ratio (kg/kg)
+    REAL(kind=RKIND),    DIMENSION( its:ite          ), INTENT(INOUT) ::  T2        ! 2-m air temperature (K)
+    REAL(kind=RKIND),    DIMENSION( its:ite          ), INTENT(IN   ) ::  PSFC      ! surface pressure (pa)
+    REAL(kind=RKIND),    DIMENSION( its:ite          ), INTENT(INOUT) ::  TH2       ! 2-m potential temperature (K)
+    REAL(kind=RKIND),    DIMENSION( its:ite          ), INTENT(INOUT) ::  U10       ! 10-m wind (m/s)
+    REAL(kind=RKIND),    DIMENSION( its:ite          ), INTENT(INOUT) ::  V10       ! 10-m wind (m/s)
+    REAL(kind=RKIND),    DIMENSION( its:ite          ), INTENT(INOUT) ::  PSIM      ! similarity stability function for momentum
+    REAL(kind=RKIND),    DIMENSION( its:ite          ), INTENT(INOUT) ::  PSIH      ! similarity stability function for heat
+    REAL(kind=RKIND),    DIMENSION( its:ite          ), INTENT(INOUT) ::  GZ1OZ0    ! log(z/z0) where z0 is roughness length
 
-     ! input variables surface_driver --> lsm
+    ! input variables surface_driver --> lsm
 
      INTEGER,                       INTENT(IN   ) :: julian, julyr 
      INTEGER,                       INTENT(IN   ) :: num_roof_layers
@@ -129,6 +142,7 @@ contains
      REAL(kind=RKIND), OPTIONAL, DIMENSION( kts:kte, its:ite ), INTENT(IN   ) :: RHO
      REAL(kind=RKIND), OPTIONAL, DIMENSION( its:ite ),          INTENT(INOUT) :: UST
      REAL(kind=RKIND), OPTIONAL, DIMENSION( its:ite ),          INTENT(INOUT) :: CHS, CHS2, CQS2
+     REAL(kind=RKIND), OPTIONAL, DIMENSION( 0:287, its:ite ),   INTENT(IN   ) :: ahe_urb2d
 
      ! local variables lsm --> urban
 
@@ -167,7 +181,7 @@ contains
 
      !===hydrological variable for single layer UCM===
 
-     INTEGER             :: jmonth, jday
+     INTEGER             :: jmonth, jday, ihour
      REAL(kind=RKIND)    :: DRELR_URB
      REAL(kind=RKIND)    :: DRELB_URB
      REAL(kind=RKIND)    :: DRELG_URB
@@ -265,6 +279,7 @@ contains
      REAL(kind=RKIND) :: CHS_URB
      REAL(kind=RKIND) :: CHS2_URB
      REAL(kind=RKIND) :: UST_URB
+     REAL(kind=RKIND) :: EMISS_URB
 
      ! NUDAPT Parameters urban --> lam
 
@@ -375,12 +390,11 @@ contains
 
      ! Local variables for multi-layer UCM
 
-     REAL(kind=RKIND), DIMENSION( its:ite ) :: HFX_RURAL,GRDFLX_RURAL          ! ,LH_RURAL,RN_RURAL
-     REAL(kind=RKIND), DIMENSION( its:ite ) :: QFX_RURAL                       ! ,QSFC_RURAL,UMOM_RURAL,VMOM_RURAL
-     REAL(kind=RKIND), DIMENSION( its:ite ) :: ALB_RURAL,EMISS_RURAL,TSK_RURAL ! ,UST_RURAL
+     REAL(kind=RKIND), DIMENSION( its:ite ) :: HFX_RURAL,GRDFLX_RURAL,UST_RURAL ! RN_RURAL
+     REAL(kind=RKIND), DIMENSION( its:ite ) :: QFX_RURAL,LH_RURAL,QSFC_RURAL    ! UMOM_RURAL,VMOM_RURAL
+     REAL(kind=RKIND), DIMENSION( its:ite ) :: ALB_RURAL,EMISS_RURAL,TSK_RURAL,Q2_RURAL,T2_RURAL
      REAL(kind=RKIND), DIMENSION( its:ite ) :: HFX_URB,UMOM_URB,VMOM_URB
      REAL(kind=RKIND), DIMENSION( its:ite ) :: QFX_URB
-     REAL(kind=RKIND), DIMENSION( its:ite ) :: EMISS_URB
      REAL(kind=RKIND), DIMENSION( its:ite ) :: RL_UP_URB
      REAL(kind=RKIND), DIMENSION( its:ite ) :: RS_ABS_URB
      REAL(kind=RKIND), DIMENSION( its:ite ) :: GRDFLX_URB
@@ -400,6 +414,11 @@ contains
       EMISS_RURAL(I)  = EMISS(I)
       TSK_RURAL(I)    = TSK(I)
       ALB_RURAL(I)    = ALBEDO(I)
+      LH_RURAL(I)     = LH(I)
+      QSFC_RURAL(I)   = QSFC(I)
+      UST_RURAL(I)    = UST(I)
+      Q2_RURAL(I)     = Q2(I)
+      T2_RURAL(I)     = T2(I)
     END DO
 
 IF (SF_URBAN_PHYSICS == 1 ) THEN         ! Beginning of UCM CALL if block
@@ -410,9 +429,10 @@ IF (SF_URBAN_PHYSICS == 1 ) THEN         ! Beginning of UCM CALL if block
 
 ILOOP : DO I = its, ite
 
-!!! (NoahmpIO%IVGTYP(I) > NoahmpIO%URBTYPE_beg) ) 
 
-  IF( IVGTYP(I) == NoahmpIO%ISURBAN_TABLE .or. IVGTYP(I) > NoahmpIO%URBTYPE_beg ) THEN
+  IF ( IVGTYP(I) == NoahmpIO%ISURBAN_TABLE .or. IVGTYP(I) > NoahmpIO%URBTYPE_beg ) THEN
+
+  IF ((FRC_URB2D(I) > 0.) .and. (FRC_URB2D(I) <= 1.)) THEN
 
     UTYPE_URB = UTYPE_URB2D(I) !urban type (low, high or industrial)
 
@@ -549,25 +569,25 @@ ILOOP : DO I = its, ite
           DRELR_URB,  DRELB_URB,                                                       & ! H
           DRELG_URB,FLXHUMR_URB,FLXHUMB_URB,FLXHUMG_URB,                               &
           TVG_URB,TT_URB,XXXVG_URB,TVGL_URB,SMG_URB,CMCG_URB,FLXHUMVG_URB,FLXHUMT_URB, &
-          lf_urb_s, z0_urb, vegfrac)
+          lf_urb_s, z0_urb, vegfrac, EMISS_URB)
 
     TS_URB2D(I) = TS_URB
 
-    ALBEDO(I)   = FRC_URB2D(I) * ALB_URB + (1-FRC_URB2D(I)) * ALBEDO(I)        ![-]      
-    HFX(I)      = FRC_URB2D(I) * SH_URB  + (1-FRC_URB2D(I)) * HFX(I)           ![W/m/m] 
-    QFX(I)      = FRC_URB2D(I) * LH_KINEMATIC_URB &
-                  + (1-FRC_URB2D(I))* QFX(I)                                   ![kg/m/m/s] 
-    LH(I)       = FRC_URB2D(I) * LH_URB  + (1-FRC_URB2D(I)) * LH(I)            ![W/m/m]   
-    GRDFLX(I)   = FRC_URB2D(I) * (G_URB*(-1.0)) + (1-FRC_URB2D(I)) * GRDFLX(I) ![W/m/m] positive: downward direction
-    TSK(I)      = FRC_URB2D(I) * TS_URB  + (1-FRC_URB2D(I)) * TSK(I)           ![K]    
+    ALBEDO(I)   = FRC_URB2D(I) * ALB_URB + (1-FRC_URB2D(I)) * ALB_RURAL(I)           ![-]      
+    HFX(I)      = FRC_URB2D(I) * SH_URB  + (1-FRC_URB2D(I)) * HFX_RURAL(I)           ![W/m/m] 
+    QFX(I)      = FRC_URB2D(I) * LH_KINEMATIC_URB + (1-FRC_URB2D(I))* QFX_RURAL(I)   ![kg/m/m/s] 
+    LH(I)       = FRC_URB2D(I) * LH_URB  + (1-FRC_URB2D(I)) * LH_RURAL(I)            ![W/m/m]   
+    GRDFLX(I)   = FRC_URB2D(I) * (G_URB*(-1.0)) + (1-FRC_URB2D(I)) * GRDFLX_RURAL(I) ![W/m/m] positive: downward direction
+    TSK(I)      = FRC_URB2D(I) * TS_URB  + (1-FRC_URB2D(I)) * TSK_RURAL(I)           ![K]
+    EMISS(I)    = FRC_URB2D(I) * EMISS_URB + (1-FRC_URB2D(I)) * EMISS_RURAL(I)     
     !Q1         = QSFC(I)/(1.0+QSFC(I))                                         
     !Q1         = FRC_URB2D(I) * QS_URB  + (1-FRC_URB2D(I)) * Q1               ![-]
 
    ! Convert QSFC back to mixing ratio
 
    !QSFC(I) = Q1/(1.0-Q1)
-    QSFC(I)     = FRC_URB2D(I) * QS_URB  + (1-FRC_URB2D(I)) * QSFC(I)           !!   QSFC(I)=QSFC1D
-    UST(I)      = FRC_URB2D(I) * UST_URB + (1-FRC_URB2D(I)) * UST(I)     ![m/s]
+    QSFC(I)     = FRC_URB2D(I) * QS_URB  + (1-FRC_URB2D(I)) * QSFC_RURAL(I)    !!   QSFC(I)=QSFC1D
+    UST(I)      = FRC_URB2D(I) * UST_URB + (1-FRC_URB2D(I)) * UST_RURAL(I)     ![m/s]
 
    ! Renew Urban State Variables
 
@@ -633,11 +653,39 @@ ILOOP : DO I = its, ite
       CHC_SFCDIF(I)  = CHC_URB
     ENDIF
 
-  ENDIF                                 ! urban land used type block
+    ! cenlin(10/17/2026): update diagnostic host model variables (moved from WRF surface driver to here)
+    Q2(I)     = FRC_URB2D(I) * Q2_URB + (1.-FRC_URB2D(I)) * Q2_RURAL(I)
+    T2(I)     = FRC_URB2D(I) * (TH2_URB/((1.E5/PSFC(I))**RCP)) + (1.-FRC_URB2D(I)) * T2_RURAL(I)
+    TH2(I)    = T2(I) * (1.E5/PSFC(I))**RCP
+    U10(I)    = U10_URB
+    V10(I)    = V10_URB  
+    PSIM(I)   = PSIM_URB
+    PSIH(I)   = PSIH_URB
+    GZ1OZ0(I) = GZ1OZ0_URB 
+    !AKHS(I)   = CHS(I)        ! only needed for MYJ scheme, not available in MPAS
+    !AKMS(I)   = AKMS_URB2D(I) ! only needed for MYJ scheme, not available in MPAS
 
-ENDDO ILOOP                             ! of I loop
+    ! cenlin(10/17/2026): move anthropogenic heat treatment from  WRF surface driver to here
+    IF (distributed_ahe_opt == 2) THEN
+       ihour  = (jmonth - 1) * 24 + MOD(INT(gmt + xtime / 60.0), 24)
+       HFX(I) = HFX(I) + ahe_urb2d(ihour,I)
+    ENDIF
 
-ENDIF                                   ! sf_urban_physics = 1 block
+  ELSE ! FRC_URB2D <=0 or >1
+
+    SH_URB2D(I)      = 0.
+    LH_URB2D(I)      = 0.
+    G_URB2D(I)       = 0.
+    RN_URB2D(I)      = 0.
+    TS_URB2D(I)      = 0.
+
+  ENDIF    ! FRC_URB2D
+
+  ENDIF      ! urban land used type block
+
+ENDDO ILOOP  ! of I loop
+
+ENDIF        ! sf_urban_physics = 1 block
 
 !--------------------------------------
 ! URBAN CANOPY MODEL END
