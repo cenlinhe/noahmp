@@ -6,6 +6,15 @@ module NoahmpUrbanDriverMainMod
 !  The entire urban code is not refactored.
 !  Sep 24, 2026: adapted to MPAS compatibility, Cenlin He (NCAR)
 !--------------------------------------------------------------------------
+
+  use module_sf_urban,        only: urban
+! use module_sf_bep,          only: bep
+! use module_sf_bep_bem,      only: bep_bem
+  use mpas_atmphys_date_time, only: cal_mon_day
+  use mpas_kind_types
+  use mpas_constants,         only: cp
+  use mpas_atmphys_constants, only: karman,xlv,rcp
+  use NoahmpIOVarType,        only: NoahmpIO_type
  
   implicit none
   
@@ -68,15 +77,6 @@ contains
                                  T2,             Q2,           PSFC,        TH2,            &
                                 U10,            V10,           PSIM,       PSIH,            &
                              GZ1OZ0, distributed_ahe_opt, gmt,xtime,  ahe_urb2d             )
-
-  USE module_sf_urban,        only: urban
-!  USE module_sf_bep,          only: bep
-!  USE module_sf_bep_bem,      only: bep_bem
-  USE mpas_atmphys_date_time, only: cal_mon_day
-  USE mpas_kind_types
-  USE mpas_constants,         only: cp
-  USE mpas_atmphys_constants, only: karman,xlv,rcp
-  USE NoahmpIOVarType,        only: NoahmpIO_type
 
 !----------------------------------------------------------------
     IMPLICIT NONE
