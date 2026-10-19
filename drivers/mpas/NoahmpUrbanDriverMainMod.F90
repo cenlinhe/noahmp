@@ -76,7 +76,7 @@ contains
                            dl_u_bep,         sf_bep,         vl_bep,                        & !O multi-layer urban
                                  T2,             Q2,           PSFC,        TH2,            &
                                 U10,            V10,           PSIM,       PSIH,            &
-                             GZ1OZ0, distributed_ahe_opt, gmt,xtime,  ahe_urb2d             )
+                             GZ1OZ0, distributed_ahe_opt,     xtime,  ahe_urb2d             )
 
 !----------------------------------------------------------------
     IMPLICIT NONE
@@ -90,7 +90,7 @@ contains
     INTEGER,                       INTENT(IN   ) :: distributed_ahe_opt
     INTEGER, DIMENSION( its:ite ), INTENT(IN   ) :: IVGTYP             ! vegetation type
     REAL(kind=RKIND),              INTENT(IN   ) :: DT                 ! titestep [s]
-    REAL(kind=RKIND), OPTIONAL,    INTENT(IN   ) :: gmt, xtime
+    REAL(kind=RKIND), OPTIONAL,    INTENT(IN   ) :: xtime
     REAL(kind=RKIND),    DIMENSION( its:ite          ), INTENT(IN   ) ::  COSZ_URB2D
     REAL(kind=RKIND),    DIMENSION( its:ite          ), INTENT(IN   ) ::  XLAT_URB2D
     REAL(kind=RKIND),    DIMENSION( kts:kte, its:ite ), INTENT(IN   ) ::  T3D       ! 3D atmospheric temperature valid at mid-levels [K]
@@ -311,7 +311,7 @@ contains
 
      ! Variables for multi-layer UCM
 
-     REAL(kind=RKIND), OPTIONAL,                       INTENT(IN   ) :: GMT
+     REAL(kind=RKIND), OPTIONAL,                       INTENT(IN   ) :: gmt
      INTEGER, OPTIONAL,                                INTENT(IN   ) :: JULDAY
      REAL(kind=RKIND), OPTIONAL, DIMENSION( its:ite ), INTENT(IN   ) :: XLAT, XLONG
      INTEGER, OPTIONAL,                                INTENT(IN   ) :: num_urban_ndm
@@ -327,7 +327,7 @@ contains
      INTEGER, OPTIONAL,                                INTENT(IN   ) :: urban_map_zgrd
      INTEGER, OPTIONAL,                                INTENT(IN   ) :: NUM_URBAN_HI
 
-     REAL(kind=RKIND), OPTIONAL, DIMENSION( 1:num_urban_hi, its:ite ), INTENT(IN   ) :: hi_urb2d
+     !REAL(kind=RKIND), OPTIONAL, DIMENSION( 1:num_urban_hi, its:ite ), INTENT(IN   ) :: hi_urb2d
      REAL(kind=RKIND), OPTIONAL, DIMENSION( its:ite ),                 INTENT(IN   ) :: lp_urb2d
      REAL(kind=RKIND), OPTIONAL, DIMENSION( its:ite ),                 INTENT(IN   ) :: lb_urb2d
      REAL(kind=RKIND), OPTIONAL, DIMENSION( its:ite ),                 INTENT(IN   ) :: hgt_urb2d
@@ -338,55 +338,67 @@ contains
      REAL(kind=RKIND), OPTIONAL, DIMENSION( its:ite ),                 INTENT(IN   ) :: z0_urb2d
      REAL(kind=RKIND), OPTIONAL, DIMENSION( its:ite ),                 INTENT(IN   ) :: vegfra
 
-     REAL(kind=RKIND), OPTIONAL, DIMENSION( 1:urban_map_zrd, its:ite ), INTENT(INOUT) :: trb_urb4d
-     REAL(kind=RKIND), OPTIONAL, DIMENSION( 1:urban_map_zwd, its:ite ), INTENT(INOUT) :: tw1_urb4d
-     REAL(kind=RKIND), OPTIONAL, DIMENSION( 1:urban_map_zwd, its:ite ), INTENT(INOUT) :: tw2_urb4d
-     REAL(kind=RKIND), OPTIONAL, DIMENSION( 1:urban_map_gd , its:ite ), INTENT(INOUT) :: tgb_urb4d
-     REAL(kind=RKIND), OPTIONAL, DIMENSION( 1:urban_map_bd , its:ite ), INTENT(INOUT) :: tlev_urb3d
-     REAL(kind=RKIND), OPTIONAL, DIMENSION( 1:urban_map_bd , its:ite ), INTENT(INOUT) :: qlev_urb3d
-     REAL(kind=RKIND), OPTIONAL, DIMENSION( 1:urban_map_wd , its:ite ), INTENT(INOUT) :: tw1lev_urb3d
-     REAL(kind=RKIND), OPTIONAL, DIMENSION( 1:urban_map_wd , its:ite ), INTENT(INOUT) :: tw2lev_urb3d
-     REAL(kind=RKIND), OPTIONAL, DIMENSION( 1:urban_map_gbd, its:ite ), INTENT(INOUT) :: tglev_urb3d
-     REAL(kind=RKIND), OPTIONAL, DIMENSION( 1:urban_map_fbd, its:ite ), INTENT(INOUT) :: tflev_urb3d
+     ! temporary solution: making BEP/BEM vars optional (cenlinhe,10/18/2026)
+     REAL(kind=RKIND), OPTIONAL, DIMENSION(1:,its:), INTENT(IN   ) :: hi_urb2d
+     REAL(kind=RKIND), OPTIONAL, DIMENSION(1:,its:), INTENT(INOUT) :: &
+                                            trb_urb4d, tw1_urb4d, tw2_urb4d, tgb_urb4d, &
+                                            tlev_urb3d, qlev_urb3d, tw1lev_urb3d, tw2lev_urb3d, &
+                                            tglev_urb3d, tflev_urb3d, &
+                                            sfwin1_urb3d, sfwin2_urb3d, sfw1_urb3d, sfw2_urb3d, &
+                                            sfr_urb3d, sfg_urb3d, t_pv_urb3d, &
+                                            trv_urb4d, qr_urb4d, drain_urb4d, &
+                                            sfrv_urb3d, lfrv_urb3d, dgr_urb3d, dg_urb3d, &
+                                            lfr_urb3d, lfg_urb3d
+
+     !REAL(kind=RKIND), OPTIONAL, DIMENSION( 1:urban_map_zrd, its:ite ), INTENT(INOUT) :: trb_urb4d
+     !REAL(kind=RKIND), OPTIONAL, DIMENSION( 1:urban_map_zwd, its:ite ), INTENT(INOUT) :: tw1_urb4d
+     !REAL(kind=RKIND), OPTIONAL, DIMENSION( 1:urban_map_zwd, its:ite ), INTENT(INOUT) :: tw2_urb4d
+     !REAL(kind=RKIND), OPTIONAL, DIMENSION( 1:urban_map_gd , its:ite ), INTENT(INOUT) :: tgb_urb4d
+     !REAL(kind=RKIND), OPTIONAL, DIMENSION( 1:urban_map_bd , its:ite ), INTENT(INOUT) :: tlev_urb3d
+     !REAL(kind=RKIND), OPTIONAL, DIMENSION( 1:urban_map_bd , its:ite ), INTENT(INOUT) :: qlev_urb3d
+     !REAL(kind=RKIND), OPTIONAL, DIMENSION( 1:urban_map_wd , its:ite ), INTENT(INOUT) :: tw1lev_urb3d
+     !REAL(kind=RKIND), OPTIONAL, DIMENSION( 1:urban_map_wd , its:ite ), INTENT(INOUT) :: tw2lev_urb3d
+     !REAL(kind=RKIND), OPTIONAL, DIMENSION( 1:urban_map_gbd, its:ite ), INTENT(INOUT) :: tglev_urb3d
+     !REAL(kind=RKIND), OPTIONAL, DIMENSION( 1:urban_map_fbd, its:ite ), INTENT(INOUT) :: tflev_urb3d
      REAL(kind=RKIND), OPTIONAL, DIMENSION( its:ite ),                  INTENT(INOUT) :: lf_ac_urb3d
      REAL(kind=RKIND), OPTIONAL, DIMENSION( its:ite ),                  INTENT(INOUT) :: sf_ac_urb3d
      REAL(kind=RKIND), OPTIONAL, DIMENSION( its:ite ),                  INTENT(INOUT) :: cm_ac_urb3d
      REAL(kind=RKIND), OPTIONAL, DIMENSION( its:ite ),                  INTENT(INOUT) :: sfvent_urb3d
      REAL(kind=RKIND), OPTIONAL, DIMENSION( its:ite ),                  INTENT(INOUT) :: lfvent_urb3d
-     REAL(kind=RKIND), OPTIONAL, DIMENSION( 1:urban_map_wd , its:ite ), INTENT(INOUT) :: sfwin1_urb3d
-     REAL(kind=RKIND), OPTIONAL, DIMENSION( 1:urban_map_wd , its:ite ), INTENT(INOUT) :: sfwin2_urb3d
-     REAL(kind=RKIND), OPTIONAL, DIMENSION( 1:urban_map_zd , its:ite ), INTENT(INOUT) :: sfw1_urb3d
-     REAL(kind=RKIND), OPTIONAL, DIMENSION( 1:urban_map_zd , its:ite ), INTENT(INOUT) :: sfw2_urb3d
-     REAL(kind=RKIND), OPTIONAL, DIMENSION( 1:urban_map_zdf, its:ite ), INTENT(INOUT) :: sfr_urb3d
-     REAL(kind=RKIND), OPTIONAL, DIMENSION( 1:num_urban_ndm, its:ite ), INTENT(INOUT) :: sfg_urb3d
+     !REAL(kind=RKIND), OPTIONAL, DIMENSION( 1:urban_map_wd , its:ite ), INTENT(INOUT) :: sfwin1_urb3d
+     !REAL(kind=RKIND), OPTIONAL, DIMENSION( 1:urban_map_wd , its:ite ), INTENT(INOUT) :: sfwin2_urb3d
+     !REAL(kind=RKIND), OPTIONAL, DIMENSION( 1:urban_map_zd , its:ite ), INTENT(INOUT) :: sfw1_urb3d
+     !REAL(kind=RKIND), OPTIONAL, DIMENSION( 1:urban_map_zd , its:ite ), INTENT(INOUT) :: sfw2_urb3d
+     !REAL(kind=RKIND), OPTIONAL, DIMENSION( 1:urban_map_zdf, its:ite ), INTENT(INOUT) :: sfr_urb3d
+     !REAL(kind=RKIND), OPTIONAL, DIMENSION( 1:num_urban_ndm, its:ite ), INTENT(INOUT) :: sfg_urb3d
      REAL(kind=RKIND), OPTIONAL, DIMENSION( its:ite ),                  INTENT(INOUT) :: ep_pv_urb3d   !GRZ
-     REAL(kind=RKIND), OPTIONAL, DIMENSION( 1:urban_map_zdf , its:ite ),INTENT(INOUT) :: t_pv_urb3d    !GRZ
-     REAL(kind=RKIND), OPTIONAL, DIMENSION( 1:urban_map_zgrd, its:ite ),INTENT(INOUT) :: trv_urb4d     !GRZ
-     REAL(kind=RKIND), OPTIONAL, DIMENSION( 1:urban_map_zgrd, its:ite ),INTENT(INOUT) :: qr_urb4d      !GRZ
+     !REAL(kind=RKIND), OPTIONAL, DIMENSION( 1:urban_map_zdf , its:ite ),INTENT(INOUT) :: t_pv_urb3d    !GRZ
+     !REAL(kind=RKIND), OPTIONAL, DIMENSION( 1:urban_map_zgrd, its:ite ),INTENT(INOUT) :: trv_urb4d     !GRZ
+     !REAL(kind=RKIND), OPTIONAL, DIMENSION( 1:urban_map_zgrd, its:ite ),INTENT(INOUT) :: qr_urb4d      !GRZ
      REAL(kind=RKIND), OPTIONAL, DIMENSION( its:ite ),                  INTENT(INOUT) :: qgr_urb3d     !GRZ
      REAL(kind=RKIND), OPTIONAL, DIMENSION( its:ite ),                  INTENT(INOUT) :: tgr_urb3d     !GRZ
-     REAL(kind=RKIND), OPTIONAL, DIMENSION( 1:urban_map_zdf, its:ite ), INTENT(INOUT) :: drain_urb4d   !GRZ
+     !REAL(kind=RKIND), OPTIONAL, DIMENSION( 1:urban_map_zdf, its:ite ), INTENT(INOUT) :: drain_urb4d   !GRZ
      REAL(kind=RKIND), OPTIONAL, DIMENSION( its:ite ),                  INTENT(INOUT) :: draingr_urb3d !GRZ
-     REAL(kind=RKIND), OPTIONAL, DIMENSION( 1:urban_map_zdf, its:ite ), INTENT(INOUT) :: sfrv_urb3d    !GRZ
-     REAL(kind=RKIND), OPTIONAL, DIMENSION( 1:urban_map_zdf, its:ite ), INTENT(INOUT) :: lfrv_urb3d    !GRZ
-     REAL(kind=RKIND), OPTIONAL, DIMENSION( 1:urban_map_zdf, its:ite ), INTENT(INOUT) :: dgr_urb3d     !GRZ
-     REAL(kind=RKIND), OPTIONAL, DIMENSION( 1:num_urban_ndm, its:ite ), INTENT(INOUT) :: dg_urb3d      !GRZ
-     REAL(kind=RKIND), OPTIONAL, DIMENSION( 1:urban_map_zdf, its:ite ), INTENT(INOUT) :: lfr_urb3d     !GRZ
-     REAL(kind=RKIND), OPTIONAL, DIMENSION( 1:num_urban_ndm, its:ite ), INTENT(INOUT) :: lfg_urb3d     !GRZ
-     REAL(kind=RKIND), OPTIONAL, DIMENSION( its:ite, kts:kte ),         INTENT(INOUT) :: a_u_bep       !Implicit momemtum component X-direction
-     REAL(kind=RKIND), OPTIONAL, DIMENSION( its:ite, kts:kte ),         INTENT(INOUT) :: a_v_bep       !Implicit momemtum component Y-direction
-     REAL(kind=RKIND), OPTIONAL, DIMENSION( its:ite, kts:kte ),         INTENT(INOUT) :: a_t_bep       !Implicit component pot. temperature
-     REAL(kind=RKIND), OPTIONAL, DIMENSION( its:ite, kts:kte ),         INTENT(INOUT) :: a_q_bep       !Implicit momemtum component X-direction
-     REAL(kind=RKIND), OPTIONAL, DIMENSION( its:ite, kts:kte ),         INTENT(INOUT) :: a_e_bep       !Implicit component TKE
-     REAL(kind=RKIND), OPTIONAL, DIMENSION( its:ite, kts:kte ),         INTENT(INOUT) :: b_u_bep       !Explicit momentum component X-direction
-     REAL(kind=RKIND), OPTIONAL, DIMENSION( its:ite, kts:kte ),         INTENT(INOUT) :: b_v_bep       !Explicit momentum component Y-direction
-     REAL(kind=RKIND), OPTIONAL, DIMENSION( its:ite, kts:kte ),         INTENT(INOUT) :: b_t_bep       !Explicit component pot. temperature
-     REAL(kind=RKIND), OPTIONAL, DIMENSION( its:ite, kts:kte ),         INTENT(INOUT) :: b_q_bep       !Implicit momemtum component Y-direction
-     REAL(kind=RKIND), OPTIONAL, DIMENSION( its:ite, kts:kte ),         INTENT(INOUT) :: b_e_bep       !Explicit component TKE
-     REAL(kind=RKIND), OPTIONAL, DIMENSION( its:ite, kts:kte ),         INTENT(INOUT) :: vl_bep        !Fraction air volume in grid cell
-     REAL(kind=RKIND), OPTIONAL, DIMENSION( its:ite, kts:kte ),         INTENT(INOUT) :: dlg_bep       !Height above ground
-     REAL(kind=RKIND), OPTIONAL, DIMENSION( its:ite, kts:kte ),         INTENT(INOUT) :: sf_bep        !Fraction air at the face of grid cell
-     REAL(kind=RKIND), OPTIONAL, DIMENSION( its:ite, kts:kte ),         INTENT(INOUT) :: dl_u_bep      !Length scale
+     !REAL(kind=RKIND), OPTIONAL, DIMENSION( 1:urban_map_zdf, its:ite ), INTENT(INOUT) :: sfrv_urb3d    !GRZ
+     !REAL(kind=RKIND), OPTIONAL, DIMENSION( 1:urban_map_zdf, its:ite ), INTENT(INOUT) :: lfrv_urb3d    !GRZ
+     !REAL(kind=RKIND), OPTIONAL, DIMENSION( 1:urban_map_zdf, its:ite ), INTENT(INOUT) :: dgr_urb3d     !GRZ
+     !REAL(kind=RKIND), OPTIONAL, DIMENSION( 1:num_urban_ndm, its:ite ), INTENT(INOUT) :: dg_urb3d      !GRZ
+     !REAL(kind=RKIND), OPTIONAL, DIMENSION( 1:urban_map_zdf, its:ite ), INTENT(INOUT) :: lfr_urb3d     !GRZ
+     !REAL(kind=RKIND), OPTIONAL, DIMENSION( 1:num_urban_ndm, its:ite ), INTENT(INOUT) :: lfg_urb3d     !GRZ
+     REAL(kind=RKIND), OPTIONAL, DIMENSION( kts:kte, its:ite ),         INTENT(INOUT) :: a_u_bep       !Implicit momemtum component X-direction
+     REAL(kind=RKIND), OPTIONAL, DIMENSION( kts:kte, its:ite ),         INTENT(INOUT) :: a_v_bep       !Implicit momemtum component Y-direction
+     REAL(kind=RKIND), OPTIONAL, DIMENSION( kts:kte, its:ite ),         INTENT(INOUT) :: a_t_bep       !Implicit component pot. temperature
+     REAL(kind=RKIND), OPTIONAL, DIMENSION( kts:kte, its:ite ),         INTENT(INOUT) :: a_q_bep       !Implicit momemtum component X-direction
+     REAL(kind=RKIND), OPTIONAL, DIMENSION( kts:kte, its:ite ),         INTENT(INOUT) :: a_e_bep       !Implicit component TKE
+     REAL(kind=RKIND), OPTIONAL, DIMENSION( kts:kte, its:ite ),         INTENT(INOUT) :: b_u_bep       !Explicit momentum component X-direction
+     REAL(kind=RKIND), OPTIONAL, DIMENSION( kts:kte, its:ite ),         INTENT(INOUT) :: b_v_bep       !Explicit momentum component Y-direction
+     REAL(kind=RKIND), OPTIONAL, DIMENSION( kts:kte, its:ite ),         INTENT(INOUT) :: b_t_bep       !Explicit component pot. temperature
+     REAL(kind=RKIND), OPTIONAL, DIMENSION( kts:kte, its:ite ),         INTENT(INOUT) :: b_q_bep       !Implicit momemtum component Y-direction
+     REAL(kind=RKIND), OPTIONAL, DIMENSION( kts:kte, its:ite ),         INTENT(INOUT) :: b_e_bep       !Explicit component TKE
+     REAL(kind=RKIND), OPTIONAL, DIMENSION( kts:kte, its:ite ),         INTENT(INOUT) :: vl_bep        !Fraction air volume in grid cell
+     REAL(kind=RKIND), OPTIONAL, DIMENSION( kts:kte, its:ite ),         INTENT(INOUT) :: dlg_bep       !Height above ground
+     REAL(kind=RKIND), OPTIONAL, DIMENSION( kts:kte, its:ite ),         INTENT(INOUT) :: sf_bep        !Fraction air at the face of grid cell
+     REAL(kind=RKIND), OPTIONAL, DIMENSION( kts:kte, its:ite ),         INTENT(INOUT) :: dl_u_bep      !Length scale
 
      ! Local variables for multi-layer UCM
 
@@ -546,7 +558,7 @@ ILOOP : DO I = its, ite
 
     ! Call urban
 
-    CALL cal_mon_day(julian,julyr,jmonth,jday)
+    CALL cal_mon_day(julian+1,julyr,jmonth,jday)  ! in MPAS, curr_julian starts from 0 (not 1)
     CALL urban(LSOLAR_URB,                                                             & ! I
           num_roof_layers, num_wall_layers, num_road_layers,                           & ! C
                 DZR,        DZB,        DZG,                                           & ! C
