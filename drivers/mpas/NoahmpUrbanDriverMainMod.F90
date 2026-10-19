@@ -142,7 +142,7 @@ contains
      REAL(kind=RKIND), OPTIONAL, DIMENSION( kts:kte, its:ite ), INTENT(IN   ) :: RHO
      REAL(kind=RKIND), OPTIONAL, DIMENSION( its:ite ),          INTENT(INOUT) :: UST
      REAL(kind=RKIND), OPTIONAL, DIMENSION( its:ite ),          INTENT(INOUT) :: CHS, CHS2, CQS2
-     REAL(kind=RKIND), OPTIONAL, DIMENSION( 0:287, its:ite ),   INTENT(IN   ) :: ahe_urb2d
+     REAL(kind=RKIND), OPTIONAL, DIMENSION( 1:288, its:ite ),   INTENT(IN   ) :: ahe_urb2d
 
      ! local variables lsm --> urban
 
@@ -679,7 +679,7 @@ ILOOP : DO I = its, ite
 
     ! cenlin(10/17/2026): move anthropogenic heat treatment from  WRF surface driver to here
     IF (distributed_ahe_opt == 2) THEN
-       ihour  = (jmonth - 1) * 24 + MOD(INT(gmt + xtime / 60.0), 24)
+       ihour  = 1 + (jmonth-1) * 24 + MOD(INT(gmt+xtime/60.0),24) ! convert ihour from 0-based to 1-based
        HFX(I) = HFX(I) + ahe_urb2d(ihour,I)
     ENDIF
 
