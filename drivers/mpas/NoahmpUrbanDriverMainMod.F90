@@ -558,7 +558,7 @@ ILOOP : DO I = its, ite
 
     ! Call urban
 
-    CALL cal_mon_day(julian+1,julyr,jmonth,jday)  ! in MPAS, curr_julian starts from 0 (not 1)
+    CALL cal_mon_day(julian,julyr,jmonth,jday) ! julday in MPAS used for julian
     CALL urban(LSOLAR_URB,                                                             & ! I
           num_roof_layers, num_wall_layers, num_road_layers,                           & ! C
                 DZR,        DZB,        DZG,                                           & ! C
